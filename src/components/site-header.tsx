@@ -1,16 +1,18 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const links = [
   { href: "/projects", label: "projects" },
-  { href: "/notes", label: "notes" },
   { href: "/now", label: "now" },
   { href: "/contact", label: "contact" },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header style={{
       borderBottom: "1px solid var(--border)",
@@ -29,15 +31,27 @@ export function SiteHeader() {
         alignItems: "center",
         justifyContent: "space-between",
       }}>
-        <Link href="/" style={{
-          color: "var(--accent2)",
-          fontWeight: 700,
-          fontSize: "1.1rem",
-          letterSpacing: "0.05em",
-        }}>
-          KP<span style={{ color: "var(--muted)" }}>_</span>
+        <Link href="/">
+          <img
+            src="/logo.png"
+            alt="KP Embedded Solutions"
+            style={{ height: 36, width: "auto" }}
+          />
         </Link>
-        <nav style={{ display: "flex", gap: "1.5rem" }}>
+        <nav style={{ 
+          display: "flex", 
+          gap: "1.5rem",
+          "@media (max-width: 768px)": {
+            display: isMenuOpen ? "flex" : "none",
+            flexDirection: "column",
+            position: "absolute",
+            top: 56,
+            right: 0,
+            background: "var(--bg)",
+            padding: "1rem",
+            border: "1px solid var(--border)",
+          }
+        }}>
           {links.map(({ href, label }) => (
             <Link key={href} href={href} style={{
               color: pathname.startsWith(href) ? "var(--accent2)" : "var(--muted)",
@@ -49,6 +63,15 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+        <button 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{ 
+            display: "none",
+            "@media (max-width: 768px)": { display: "block" }
+          }}
+        >
+          ☰
+        </button>
       </div>
     </header>
   );
