@@ -33,58 +33,76 @@ export default function HomePage() {
   const featured = projects.slice(0, 3);
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: "3rem 1.5rem" }}>
+    <main style={{ maxWidth: "0 auto", margin: "0 auto", padding: "3rem 1.5rem" }}>
 
       {/* HERO */}
-      <section style={{ marginBottom: "5rem" }}>
-        <p style={{ color: "var(--accent2)", fontSize: "0.8rem", letterSpacing: "0.15em", marginBottom: "1rem" }}>
-          PARIS · EMBEDDED SYSTEMS · EDGE AI
-        </p>
-        <h1 style={{
-          fontSize: "clamp(2.5rem, 6vw, 4rem)",
-          fontWeight: 700,
-          lineHeight: 1.1,
-          letterSpacing: "-0.02em",
-          marginBottom: "1.5rem",
-          color: "var(--text)",
-        }}>
-          Ketul Patel
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: "1.05rem", maxWidth: 560, marginBottom: "2rem", lineHeight: 1.8 }}>
-          Electrical Engineer turned Embedded Systems & Edge AI developer. 7 years from 
-          circuits to chips to neural networks 
-          — I believe no technology is out of reach if you understand it deeply.
-        </p>
-        <div style={{ marginBottom: "2.5rem" }}>
-          {["Raspberry Pi 5", "C/C++", "Python", "MATLAB", "Qt/QML", "Embedded Linux", "TFLite", "Hailo-8L", "PID Control", "Robotics"]
-            .map(t => <Tag key={t} label={t} />)}
-        </div>
+<section style={{
+  marginBottom: "5rem",
+  position: "relative",
+  borderRadius: 12,
+  overflow: "hidden",
+  padding: "4rem 2rem",
+  backgroundImage: "url('/circuit-bg.jpg')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+}}>
+  {/* dark overlay */}
+  <div style={{
+    position: "absolute",
+    inset: 0,
+    background: "rgba(10, 10, 15, 0.92)",
+    zIndex: 0,
+  }} />
+  <div style={{ position: "relative", zIndex: 1 }}>
 
-        {/* CTA + Social Row */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
-          <Link href="/projects" style={{
-            padding: "0.6rem 1.4rem",
-            background: "var(--accent)",
-            color: "white",
-            borderRadius: 6,
-            fontSize: "0.85rem",
-            letterSpacing: "0.05em",
-            fontWeight: 600,
-          }}>View Projects →</Link>
-          <SocialLinks />
-        </div>
-      </section>
+    <p style={{ color: "var(--accent2)", fontSize: "0.8rem", letterSpacing: "0.15em", marginBottom: "1rem" }}>
+      PARIS · EMBEDDED SYSTEMS · EDGE AI
+    </p>
+    <h1 style={{
+      fontSize: "clamp(2.5rem, 6vw, 4rem)",
+      fontWeight: 700,
+      lineHeight: 1.1,
+      letterSpacing: "-0.02em",
+      marginBottom: "1.5rem",
+      color: "var(--text)",
+    }}>
+      Ketul Patel
+    </h1>
+    <p style={{ color: "var(--text)", fontSize: "1.05rem", maxWidth: 560, marginBottom: "2rem", lineHeight: 1.8 }}>
+      From electrical circuits to edge AI &mdash; Diploma &#8594; B.E. &#8594; Master&apos;s in Embedded Systems.
+      I build real-time systems, autonomous robots, and AI inference pipelines at the edge.
+    </p>
+    <div style={{ marginBottom: "2.5rem" }}>
+      {["Raspberry Pi 5", "C/C++", "Python", "MATLAB", "Qt/QML", "Embedded Linux", "TFLite", "Hailo-8L", "PID Control", "Robotics"]
+        .map(t => <Tag key={t} label={t} />)}
+    </div>
+
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
+      <Link href="/projects" style={{
+        padding: "0.6rem 1.4rem",
+        background: "var(--accent)",
+        color: "white",
+        borderRadius: 6,
+        fontSize: "0.85rem",
+        letterSpacing: "0.05em",
+        fontWeight: 600,
+      }}>View Projects →</Link>
+      <SocialLinks />
+    </div>
+
+  </div>
+</section>
 
       <div style={{ borderTop: "1px solid var(--border)", marginBottom: "4rem" }} />
 
       {/* NOW */}
       <section style={{ marginBottom: "4rem" }}>
         <SectionHeader title="Now" />
-        <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>What I'm working on this month.</p>
+        <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>What I&apos;m working on this month.</p>
         <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {[
             "Improving indoor robot guidance using lightweight vision models + robust UART control.",
-            "Studying Hailo compilation workflow (ONNX/TensorFlow → HAR → HEF) and YAML configs.",
+            "Studying Hailo compilation workflow (ONNX/TensorFlow &#8594; HAR &#8594; HEF) and YAML configs.",
             "Writing short lab notes about what works, what fails, and how I debug.",
           ].map((item, i) => (
             <li key={i} style={{ color: "#9090b8", paddingLeft: "1rem", borderLeft: "2px solid var(--accent)" }}>

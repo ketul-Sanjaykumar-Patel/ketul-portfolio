@@ -22,7 +22,7 @@ export default function ProjectsPage() {
   const filtered = active === "All" ? projects : projects.filter(p => p.category === active);
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: "3rem 1.5rem" }}>
+    <main style={{ maxWidth: "0 auto", margin: "0 auto", padding: "3rem 1.5rem" }}>
       <p style={{ color: "var(--accent2)", fontSize: "0.8rem", letterSpacing: "0.15em", marginBottom: "0.75rem" }}>
         PORTFOLIO
       </p>

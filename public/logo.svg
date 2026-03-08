@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56" width="320" height="56">
+  <defs>
+    <style>
+      .kp { font-family: 'Courier New', monospace; font-weight: 900; font-size: 38px; fill: #00d4aa; }
+      .sub { font-family: 'Courier New', monospace; font-weight: 400; font-size: 11px; fill: #00d4aa; letter-spacing: 0.18em; }
+      .dim { opacity: 0.5; }
+    </style>
+  </defs>
+
+  <!-- KP letters -->
+  <text x="0" y="40" class="kp">KP</text>
+
+  <!-- Chip icon -->
+  <!-- chip body -->
+  <rect x="74" y="12" width="28" height="28" rx="3" fill="none" stroke="#00d4aa" stroke-width="2"/>
+  <!-- inner chip -->
+  <rect x="80" y="18" width="16" height="16" rx="1" fill="#00d4aa" opacity="0.25"/>
+  <!-- cross lines inside -->
+  <line x1="88" y1="18" x2="88" y2="34" stroke="#00d4aa" stroke-width="1" opacity="0.6"/>
+  <line x1="80" y1="26" x2="96" y2="26" stroke="#00d4aa" stroke-width="1" opacity="0.6"/>
+  <!-- pins left -->
+  <line x1="67" y1="19" x2="74" y2="19" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="67" y1="26" x2="74" y2="26" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="67" y1="33" x2="74" y2="33" stroke="#00d4aa" stroke-width="1.5"/>
+  <!-- pins right -->
+  <line x1="102" y1="19" x2="109" y2="19" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="102" y1="26" x2="109" y2="26" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="102" y1="33" x2="109" y2="33" stroke="#00d4aa" stroke-width="1.5"/>
+  <!-- pins top -->
+  <line x1="81" y1="5" x2="81" y2="12" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="88" y1="5" x2="88" y2="12" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="95" y1="5" x2="95" y2="12" stroke="#00d4aa" stroke-width="1.5"/>
+  <!-- pins bottom -->
+  <line x1="81" y1="40" x2="81" y2="47" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="88" y1="40" x2="88" y2="47" stroke="#00d4aa" stroke-width="1.5"/>
+  <line x1="95" y1="40" x2="95" y2="47" stroke="#00d4aa" stroke-width="1.5"/>
+
+  <!-- EMBEDDED SOLUTIONS text -->
+  <text x="118" y="28" class="sub">EMBEDDED</text>
+  <text x="118" y="43" class="sub">SOLUTIONS</text>
+</svg>
