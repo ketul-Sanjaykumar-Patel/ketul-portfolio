@@ -269,11 +269,20 @@ void motor(int sL, int sR) {
         ],
         images: [
           // Add images here:
-          // { src: "/projects/robot-v1/robot.jpg", caption: "Robot in corridor" },
+          { src: "/robot-v1/image_first_trial.jpeg", caption: "Robot first trial" },
+          { src: "/robot-v1/final_image_f.jpeg", caption: "Robot front view" },
+          { src: "/robot-v1/final_image_r.jpeg", caption: "Robot right view" },
+          { src: "/robot-v1/final_image_b.jpeg", caption: "Robot back view" },
+          { src: "/robot-v1/final_image_l.jpeg", caption: "Robot left view" },
+          { src: "/robot-v1/final_image_f_close.jpeg", caption: "Robot front close view" },
+          { src: "/robot-v1/battery_module.jpeg", caption: "Robot battery module" },
+          { src: "/robot-v1/without_coustom_battery.jpeg", caption: "Robot without custom battery" },
+          { src: "/robot-v1/image_pridiction.jpeg", caption: "Robot prediction view" },
+          
         ],
         videos: [
           // Add videos here:
-          // { url: "/projects/robot-v1/demo.mp4", caption: "Autonomous navigation demo" },
+          { url: "/robot-v1/robo_1.mp4", caption: "Autonomous driving demo" },
         ],
       },
     },
