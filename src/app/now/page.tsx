@@ -6,11 +6,11 @@ export default function NowPage() {
         This page is updated regularly with what I’m building and learning.
       </p>
 
-      <div className="rounded-2xl border p-5 text-muted-foreground space-y-2">
+      {/* <div className="rounded-2xl border p-5 text-muted-foreground space-y-2">
         <p>• Improving indoor navigation reliability with camera-only guidance.</p>
         <p>• Testing lightweight models for low-power inference.</p>
         <p>• Writing clean documentation (notes + case studies).</p>
-      </div>
+      </div> */}
     </div>
   );
 }

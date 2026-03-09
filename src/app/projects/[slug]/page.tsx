@@ -11,9 +11,9 @@ export default function ProjectDetailPage() {
   const slug = typeof params.slug === "string" ? params.slug : Array.isArray(params.slug) ? params.slug[0] : "";
   const p = projects.find((x) => x.slug === slug);
 
-  // ── ALL hooks must be before any early return ──
   const [activeTab, setActiveTab] = useState("overview");
   const [fileIdx, setFileIdx] = useState(0);
+  const [lightbox, setLightbox] = useState<{ type: "image" | "video"; src: string; caption: string } | null>(null);
 
   if (!p) return notFound();
 
@@ -37,8 +37,74 @@ export default function ProjectDetailPage() {
     borderRadius: 8, padding: "1.5rem", marginBottom: "1.5rem",
   };
 
+  const ImageCard = ({ img, height }: { img: { src: string; caption: string }; height?: number }) => (
+    <div
+      onClick={() => setLightbox({ type: "image", src: img.src, caption: img.caption })}
+      style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)", cursor: "zoom-in" }}
+    >
+      <img
+        src={img.src}
+        alt={img.caption}
+        style={{ width: "100%", display: "block", objectFit: "cover", height: height ?? 200 }}
+      />
+      {img.caption && (
+        <p style={{ padding: "0.5rem 0.75rem", fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>
+          {img.caption}
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: "3rem 1.5rem" }}>
+
+      {/* ══ LIGHTBOX ══ */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.92)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            cursor: "zoom-out", padding: "2rem",
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightbox(null)}
+            style={{
+              position: "fixed", top: "1.5rem", right: "1.5rem",
+              background: "none", border: "1px solid #444",
+              borderRadius: 6, color: "#aaa", fontSize: "1.1rem",
+              cursor: "pointer", padding: "0.3rem 0.75rem", zIndex: 1001,
+            }}
+          >✕</button>
+
+          {lightbox.type === "image" ? (
+            <img
+              src={lightbox.src}
+              alt={lightbox.caption}
+              onClick={e => e.stopPropagation()}
+              style={{ maxWidth: "90vw", maxHeight: "80vh", objectFit: "contain", borderRadius: 8 }}
+            />
+          ) : (
+            <video
+              src={lightbox.src}
+              controls
+              autoPlay
+              onClick={e => e.stopPropagation()}
+              style={{ maxWidth: "90vw", maxHeight: "80vh", borderRadius: 8 }}
+            />
+          )}
+
+          {lightbox.caption && (
+            <p style={{ color: "#aaa", fontSize: "0.85rem", marginTop: "1rem", textAlign: "center" }}>
+              {lightbox.caption}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Back */}
       <Link href="/projects" style={{ color: "var(--muted)", fontSize: "0.8rem", letterSpacing: "0.05em" }}>
@@ -135,7 +201,6 @@ export default function ProjectDetailPage() {
       {/* ══ CODE ══ */}
       {activeTab === "code" && p.tabs && (
         <>
-          {/* File selector pills */}
           {allFiles.length > 1 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.5rem" }}>
               {allFiles.map((f, i) => (
@@ -154,12 +219,10 @@ export default function ProjectDetailPage() {
             </div>
           )}
 
-          {/* File description */}
           <p style={{ color: "var(--muted)", fontSize: "0.88rem", marginBottom: "1rem", lineHeight: 1.7 }}>
             <span style={{ color: "var(--accent2)" }}>#{fileIdx + 1}</span> — {allFiles[fileIdx]?.description}
           </p>
 
-          {/* VS Code viewer */}
           {allFiles[fileIdx] && (
             <CodeViewer
               filename={allFiles[fileIdx].filename}
@@ -196,64 +259,86 @@ export default function ProjectDetailPage() {
             </section>
           )}
 
-          {/* Images */}
-          <section style={{ marginBottom: "2.5rem" }}>
-            <h2 style={sectionLabel}>IMAGES</h2>
-            {p.tabs.results.images.length > 0 ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
-                {p.tabs.results.images.map((img, i) => (
-                  <div key={i} style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
-                    <img src={img.src} alt={img.caption} style={{ width: "100%", display: "block", objectFit: "cover" }} />
-                    {img.caption && (
-                      <p style={{ padding: "0.5rem 0.75rem", fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>
-                        {img.caption}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{
-                border: "1px dashed var(--border)", borderRadius: 8,
-                padding: "2.5rem", textAlign: "center",
-                color: "var(--muted)", fontSize: "0.85rem",
-              }}>
-                No images yet — add photos to{" "}
-                <code style={{ color: "var(--accent2)" }}>public/projects/{p.slug}/</code>
-                {" "}and update{" "}
-                <code style={{ color: "var(--accent2)" }}>projects.ts</code>
-              </div>
-            )}
-          </section>
+          {/* Images — only show if project has images */}
+          {p.tabs.results.images.length > 0 && (
+            <section style={{ marginBottom: "2.5rem" }}>
+              <h2 style={sectionLabel}>IMAGES</h2>
 
-          {/* Videos */}
-          <section>
-            <h2 style={sectionLabel}>VIDEOS</h2>
-            {p.tabs.results.videos.length > 0 ? (
+              {/* Gripper & Shapes get special layout: 1st full, 2nd full, rest 3-column */}
+              {(p.slug === "robotic-arm-gripper" || p.slug === "shapes-recognizer-nn") ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {p.tabs.results.images.slice(0, 2).map((img, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setLightbox({ type: "image", src: img.src, caption: img.caption })}
+                      style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)", cursor: "zoom-in" }}
+                    >
+                      <img src={img.src} alt={img.caption} style={{ width: "100%", display: "block", objectFit: "cover", maxHeight: 400 }} />
+                      {img.caption && (
+                        <p style={{ padding: "0.5rem 0.75rem", fontSize: "0.75rem", color: "var(--muted)", margin: 0 }}>{img.caption}</p>
+                      )}
+                    </div>
+                  ))}
+                  {p.tabs.results.images.length > 2 && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                      {p.tabs.results.images.slice(2).map((img, i) => (
+                        <ImageCard key={i} img={img} height={180} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* All other projects — standard auto grid */
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+                  {p.tabs.results.images.map((img, i) => (
+                    <ImageCard key={i} img={img} height={200} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Videos — only show if project has videos */}
+          {p.tabs.results.videos.length > 0 && (
+            <section>
+              <h2 style={sectionLabel}>VIDEOS</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 {p.tabs.results.videos.map((vid, i) => (
                   <div key={i}>
                     <p style={{ color: "var(--muted)", fontSize: "0.82rem", marginBottom: "0.5rem" }}>{vid.caption}</p>
-                    <video controls style={{
-                      width: "100%", borderRadius: 8,
-                      border: "1px solid var(--border)", display: "block",
-                    }} src={vid.url} />
+                    {/* Click thumbnail to open fullscreen */}
+                    <div
+                      onClick={() => setLightbox({ type: "video", src: vid.url, caption: vid.caption })}
+                      style={{ cursor: "zoom-in", position: "relative", borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}
+                    >
+                      <video src={vid.url} style={{ width: "100%", display: "block", pointerEvents: "none" }} />
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        background: "rgba(0,0,0,0.35)",
+                      }}>
+                        <span style={{ fontSize: "3.5rem", color: "white", opacity: 0.9 }}>▶</span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div style={{
-                border: "1px dashed var(--border)", borderRadius: 8,
-                padding: "2.5rem", textAlign: "center",
-                color: "var(--muted)", fontSize: "0.85rem",
-              }}>
-                No videos yet — add mp4 files to{" "}
-                <code style={{ color: "var(--accent2)" }}>public/projects/{p.slug}/</code>
-                {" "}and update{" "}
-                <code style={{ color: "var(--accent2)" }}>projects.ts</code>
-              </div>
-            )}
-          </section>
+            </section>
+          )}
+
+          {/* No media placeholder */}
+          {p.tabs.results.images.length === 0 && p.tabs.results.videos.length === 0 && (
+            <div style={{
+              border: "1px dashed var(--border)", borderRadius: 8,
+              padding: "2.5rem", textAlign: "center",
+              color: "var(--muted)", fontSize: "0.85rem",
+            }}>
+              No media yet — add images or videos to{" "}
+              <code style={{ color: "var(--accent2)" }}>public/projects/{p.slug}/</code>
+              {" "}and update{" "}
+              <code style={{ color: "var(--accent2)" }}>projects.ts</code>
+            </div>
+          )}
         </>
       )}
 

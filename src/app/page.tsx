@@ -101,8 +101,11 @@ export default function HomePage() {
         <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>What I&apos;m working on this month.</p>
         <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {[
+            "Open to new opportunities — actively looking for a job in embedded systems and edge AI.",
+            "Exploring new technologies and understanding new concepts to keep growing.",
+            "Polishing my skills and building real projects to stay sharp.",
             "Improving indoor robot guidance using lightweight vision models + robust UART control.",
-            "Studying Hailo compilation workflow (ONNX/TensorFlow &#8594; HAR &#8594; HEF) and YAML configs.",
+            "Studying Hailo compilation workflow (ONNX/TensorFlow → HAR → HEF) and YAML configs.",
             "Writing short lab notes about what works, what fails, and how I debug.",
           ].map((item, i) => (
             <li key={i} style={{ color: "#9090b8", paddingLeft: "1rem", borderLeft: "2px solid var(--accent)" }}>
