@@ -4,6 +4,7 @@ export function SocialLinks() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
       <span style={{ color: "var(--border)" }}>|</span>
+
       <a
         href="https://github.com/ketul099"
         target="_blank"
@@ -15,6 +16,7 @@ export function SocialLinks() {
         </svg>
         GitHub
       </a>
+
       <a
         href="https://www.linkedin.com/in/ketul-patel-kp099/"
         target="_blank"
@@ -26,6 +28,20 @@ export function SocialLinks() {
         </svg>
         LinkedIn
       </a>
+
+      <a
+        href="/cv/ketul_patel_Embedded_systems.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        download="ketul_patel_Embedded_systems.pdf"
+        className="social-link"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM12 17l-4-4h2.5v-3h3v3H16l-4 4z"/>
+        </svg>
+        CV
+      </a>
+
     </div>
   );
 }
