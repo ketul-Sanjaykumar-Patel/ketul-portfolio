@@ -1,3 +1,6 @@
+const gmailComposeUrl =
+  "https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=ketulpatel858@gmail.com&su=Portfolio%20Inquiry";
+
 export default function ContactPage() {
   return (
     <main className="site-shell page-shell">
@@ -9,7 +12,7 @@ export default function ContactPage() {
           to start.
         </p>
         <div className="button-row">
-          <a href="mailto:ketulpatel858@gmail.com" className="button-primary">
+          <a href={gmailComposeUrl} className="button-primary" target="_blank" rel="noreferrer">
             Send email
           </a>
           <a href="/cv/ketul_patel_Embedded_systems.pdf" className="button-secondary" target="_blank" rel="noreferrer">
@@ -21,7 +24,7 @@ export default function ContactPage() {
       <section className="contact-grid">
         <div className="panel contact-card">
           <p className="contact-label">Email</p>
-          <a href="mailto:ketulpatel858@gmail.com" className="contact-link">
+          <a href={gmailComposeUrl} className="contact-link" target="_blank" rel="noreferrer">
             ketulpatel858@gmail.com
           </a>
         </div>
@@ -40,8 +43,13 @@ export default function ContactPage() {
 
         <div className="panel contact-card">
           <p className="contact-label">GitHub</p>
-          <a href="https://github.com/ketul099" target="_blank" rel="noreferrer" className="contact-link">
-            github.com/ketul099
+          <a
+            href="https://github.com/ketul-Sanjaykumar-Patel"
+            target="_blank"
+            rel="noreferrer"
+            className="contact-link"
+          >
+            github.com/ketul-Sanjaykumar-Patel
           </a>
         </div>
       </section>

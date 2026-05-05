@@ -1,0 +1,64 @@
+<svg width="1400" height="820" viewBox="0 0 1400 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="820" rx="32" fill="#F5F7FB"/>
+  <rect x="54" y="58" width="1292" height="704" rx="26" fill="#FFFFFF" stroke="#D7DFEA" stroke-width="2"/>
+
+  <text x="92" y="120" fill="#113355" font-family="Arial, sans-serif" font-size="36" font-weight="700">
+    e-Health IoT Platform
+  </text>
+  <text x="92" y="156" fill="#5A6D85" font-family="Arial, sans-serif" font-size="18">
+    Two Arduino R4 WiFi nodes send sensor data to a Raspberry Pi 5 gateway for storage, alerts, and a live dashboard.
+  </text>
+
+  <rect x="92" y="214" width="320" height="252" rx="24" fill="#EFF6FF" stroke="#A8C7FF" stroke-width="2"/>
+  <text x="122" y="262" fill="#153B73" font-family="Arial, sans-serif" font-size="28" font-weight="700">Arduino R4 WiFi #1</text>
+  <text x="122" y="296" fill="#355271" font-family="Arial, sans-serif" font-size="18">Fixed platform</text>
+  <rect x="122" y="326" width="260" height="34" rx="17" fill="#D9E9FF"/>
+  <text x="138" y="348" fill="#21486F" font-family="Arial, sans-serif" font-size="16">BMP280 | MAX30105 | MPU6050</text>
+  <rect x="122" y="374" width="260" height="34" rx="17" fill="#D9E9FF"/>
+  <text x="138" y="396" fill="#21486F" font-family="Arial, sans-serif" font-size="16">Alcohol sensor | LCD | I2C bus</text>
+  <text x="122" y="438" fill="#48637C" font-family="Arial, sans-serif" font-size="16">JSON over HTTP every 2 seconds</text>
+
+  <rect x="92" y="504" width="320" height="202" rx="24" fill="#FFF4E8" stroke="#FFD2A6" stroke-width="2"/>
+  <text x="122" y="552" fill="#7A3D12" font-family="Arial, sans-serif" font-size="28" font-weight="700">Arduino R4 WiFi #2</text>
+  <text x="122" y="586" fill="#805B3E" font-family="Arial, sans-serif" font-size="18">Mobile platform</text>
+  <rect x="122" y="616" width="260" height="34" rx="17" fill="#FFE4C7"/>
+  <text x="138" y="638" fill="#825123" font-family="Arial, sans-serif" font-size="16">MPU6050 | MLX90614 | GPS</text>
+  <rect x="122" y="664" width="260" height="34" rx="17" fill="#FFE4C7"/>
+  <text x="138" y="686" fill="#825123" font-family="Arial, sans-serif" font-size="16">Steps | Fall alert | Cancel button</text>
+
+  <rect x="530" y="280" width="352" height="284" rx="28" fill="#EEF9F2" stroke="#9DDBB0" stroke-width="2"/>
+  <text x="566" y="332" fill="#145A32" font-family="Arial, sans-serif" font-size="30" font-weight="700">Raspberry Pi 5 Gateway</text>
+  <text x="566" y="370" fill="#35684B" font-family="Arial, sans-serif" font-size="18">Flask server + SQLite database</text>
+  <rect x="566" y="402" width="280" height="42" rx="21" fill="#D7F2E0"/>
+  <text x="590" y="429" fill="#21543A" font-family="Arial, sans-serif" font-size="18">POST /api/fixed</text>
+  <rect x="566" y="456" width="280" height="42" rx="21" fill="#D7F2E0"/>
+  <text x="590" y="483" fill="#21543A" font-family="Arial, sans-serif" font-size="18">POST /api/mobile</text>
+  <rect x="566" y="510" width="280" height="42" rx="21" fill="#D7F2E0"/>
+  <text x="590" y="537" fill="#21543A" font-family="Arial, sans-serif" font-size="18">GET /api/latest + history</text>
+
+  <rect x="974" y="238" width="278" height="164" rx="24" fill="#F4F0FF" stroke="#C8B4FF" stroke-width="2"/>
+  <text x="1004" y="288" fill="#4E2F8E" font-family="Arial, sans-serif" font-size="28" font-weight="700">SQLite</text>
+  <text x="1004" y="324" fill="#6C57A1" font-family="Arial, sans-serif" font-size="18">fixed_data</text>
+  <text x="1004" y="354" fill="#6C57A1" font-family="Arial, sans-serif" font-size="18">mobile_data</text>
+
+  <rect x="974" y="448" width="278" height="206" rx="24" fill="#FFF7E7" stroke="#F1D17C" stroke-width="2"/>
+  <text x="1004" y="498" fill="#6E5409" font-family="Arial, sans-serif" font-size="28" font-weight="700">Browser Dashboard</text>
+  <text x="1004" y="534" fill="#856B1F" font-family="Arial, sans-serif" font-size="18">Latest vitals</text>
+  <text x="1004" y="566" fill="#856B1F" font-family="Arial, sans-serif" font-size="18">Alert state</text>
+  <text x="1004" y="598" fill="#856B1F" font-family="Arial, sans-serif" font-size="18">Location + history</text>
+
+  <path d="M412 340H514" stroke="#4D84F5" stroke-width="8" stroke-linecap="round"/>
+  <path d="M412 606H514" stroke="#E08732" stroke-width="8" stroke-linecap="round"/>
+  <path d="M882 350H948" stroke="#3A9A5F" stroke-width="8" stroke-linecap="round"/>
+  <path d="M882 548H948" stroke="#3A9A5F" stroke-width="8" stroke-linecap="round"/>
+
+  <polygon points="514,328 550,340 514,352" fill="#4D84F5"/>
+  <polygon points="514,594 550,606 514,618" fill="#E08732"/>
+  <polygon points="948,338 982,350 948,362" fill="#3A9A5F"/>
+  <polygon points="948,536 982,548 948,560" fill="#3A9A5F"/>
+
+  <text x="430" y="324" fill="#4D84F5" font-family="Arial, sans-serif" font-size="15">WiFi + HTTP</text>
+  <text x="428" y="590" fill="#E08732" font-family="Arial, sans-serif" font-size="15">WiFi + HTTP</text>
+  <text x="894" y="330" fill="#3A9A5F" font-family="Arial, sans-serif" font-size="15">Store</text>
+  <text x="894" y="528" fill="#3A9A5F" font-family="Arial, sans-serif" font-size="15">Serve</text>
+</svg>

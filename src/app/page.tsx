@@ -18,39 +18,39 @@ export default function HomePage() {
   ];
   const currentFocus = [
     {
-      title: "Actively job hunting",
-      text: "Looking for embedded systems, robotics, or edge AI roles where I can ship hardware-aware software.",
+      title: "Teaching contract + freelance work",
+      text: "Teaching at my institute while taking on freelance embedded and IoT work that turns prototypes into clear, working systems.",
+    },
+    {
+      title: "e-Health IoT platform",
+      text: "Turning a two-node Arduino and Raspberry Pi monitoring build into a stronger case study with architecture, alerts, sensor mapping, and dashboard flow.",
     },
     {
       title: "Robot guidance reliability",
-      text: "Improving indoor robot control with lightweight vision models and more predictable UART command timing.",
+      text: "Improving indoor robot control with lightweight vision models, steadier UART timing, and cleaner decision logic.",
     },
     {
       title: "Acceleration workflows",
       text: "Studying the ONNX to HAR to HEF path so models are easier to move onto Hailo hardware.",
     },
-    {
-      title: "Writing better notes",
-      text: "Turning experiments, failures, and debugging sessions into cleaner case studies and lab-style documentation.",
-    },
   ];
   const quickStats = [
     { value: `${projects.length}+`, label: "project case studies" },
-    { value: "4", label: "focus areas" },
-    { value: "offline-first", label: "favorite constraint" },
+    { value: "4", label: "main technical tracks" },
+    { value: "offline-first", label: "deployment mindset" },
   ];
-  const detailCards = [
+  const strengths = [
     {
-      title: "Why the work hits",
-      text: "The portfolio is strongest when it feels like a lab notebook crossed with a sharp product site, not a generic resume page.",
+      title: "Embedded and robotics",
+      text: "Raspberry Pi, microcontroller communication, motor control, sensor-driven behavior, and real hardware constraints.",
     },
     {
-      title: "What I build",
-      text: "Perception pipelines, embedded control loops, robotics prototypes, and small software tools that support them.",
+      title: "Edge AI deployment",
+      text: "Inference pipelines, TFLite workflows, Hailo experiments, and model choices shaped by latency and device limits.",
     },
     {
-      title: "What I care about",
-      text: "Latency, robustness, deployment reality, and whether the system still works when the internet disappears.",
+      title: "Technical communication",
+      text: "I like explaining what was built, why it works, and what failed during implementation without hiding the messy parts.",
     },
     {
       title: "Best fit teams",
@@ -62,13 +62,12 @@ export default function HomePage() {
     <main className="site-shell page-shell">
       <section className="hero-grid">
         <div className="panel hero-panel">
-          <p className="section-kicker">Paris / Embedded systems / Edge AI</p>
-          <h1 className="hero-title">
-            I build <span className="accent-scribble">robots</span> and edge AI systems that think on-device.
-          </h1>
+          <p className="section-kicker">Paris / Embedded systems / Edge AI / Teaching</p>
+          <h1 className="hero-title">Embedded systems and edge AI for robots that run in the real world.</h1>
           <p className="hero-copy">
-            From electrical circuits to real-time inference pipelines, I like building systems where hardware,
-            software, and practical constraints all have to agree before anything moves.
+            I work across embedded Linux, robotics, computer vision, and on-device inference. Right now that includes
+            teaching at my institute, freelance engineering work, and building systems where software, hardware, and
+            real-world behavior all need to line up.
           </p>
 
           <div className="button-row">
@@ -95,10 +94,11 @@ export default function HomePage() {
           <div className="panel sticker-card">
             <span className="eyebrow-label">currently</span>
             <strong style={{ display: "block", fontSize: "1.3rem", lineHeight: 1.1, marginTop: "0.4rem" }}>
-              Open to embedded systems and robotics roles.
+              Teaching embedded systems and building IoT-based healthcare systems.
             </strong>
             <p className="small-copy" style={{ marginTop: "0.6rem" }}>
-              Especially teams working on edge AI, automation, controls, or real hardware in the loop.
+              Integrating sensors, building smart detection, and making data visible on both a website and a mobile
+              application.
             </p>
           </div>
 
@@ -114,13 +114,13 @@ export default function HomePage() {
           <div className="hero-microgrid">
             <div className="panel micro-card">
               <span className="eyebrow-label">track</span>
-              <h3 style={{ marginTop: "0.55rem" }}>Embedded systems first</h3>
+              <h3 style={{ marginTop: "0.55rem" }}>Systems-first work</h3>
               <p>Robotics, Linux on Pi, microcontrollers, and deployment-minded AI pipelines.</p>
             </div>
             <div className="panel micro-card">
-              <span className="eyebrow-label">energy</span>
-              <h3 style={{ marginTop: "0.55rem" }}>Build, test, iterate</h3>
-              <p>Small loops, visible progress, and lots of debugging notes beat vague big promises.</p>
+              <span className="eyebrow-label">approach</span>
+              <h3 style={{ marginTop: "0.55rem" }}>Build, test, document</h3>
+              <p>Short loops, clear debugging, and reproducible results matter more than flashy demos.</p>
             </div>
           </div>
         </div>
@@ -129,11 +129,11 @@ export default function HomePage() {
       <section className="section-stack">
         <div className="section-header">
           <div>
-            <p className="section-kicker">Current mode</p>
-            <h2 className="section-heading">What I am sharpening right now</h2>
+            <p className="section-kicker">Current work</p>
+            <h2 className="section-heading">What I am working on now</h2>
             <p className="section-copy">
-              The portfolio is grounded in real projects, but the current work is about making the next build more
-              reliable, faster, and easier to explain.
+              Right now the focus is on reliability, deployment, and making each project easier to explain as an
+              engineering story instead of just a demo.
             </p>
           </div>
           <Link href="/now" className="section-link">
@@ -175,10 +175,10 @@ export default function HomePage() {
         <div className="section-header">
           <div>
             <p className="section-kicker">Selected work</p>
-            <h2 className="section-heading">Case studies with real hardware and real constraints</h2>
+            <h2 className="section-heading">Selected projects</h2>
             <p className="section-copy">
-              The strongest thread across these projects is offline-first thinking: camera input, embedded compute,
-              deterministic control, and debugging until the thing behaves.
+              These projects cover embedded control, robot navigation, edge AI inference, signal processing, and
+              deployment-focused experimentation.
             </p>
           </div>
           <Link href="/projects" className="section-link">
@@ -212,13 +212,13 @@ export default function HomePage() {
       <section className="section-stack">
         <div className="section-header">
           <div>
-            <p className="section-kicker">About the fit</p>
-            <h2 className="section-heading">A portfolio that reads closer to a build log than a brochure</h2>
+            <p className="section-kicker">Core strengths</p>
+            <h2 className="section-heading">What I bring technically</h2>
           </div>
         </div>
 
         <div className="info-grid">
-          {detailCards.map((item) => (
+          {strengths.map((item) => (
             <div key={item.title} className="panel micro-card">
               <h3>{item.title}</h3>
               <p>{item.text}</p>
@@ -230,10 +230,10 @@ export default function HomePage() {
       <section className="panel cta-banner">
         <div>
           <p className="section-kicker">Next step</p>
-          <h2 className="section-heading">If your team builds things that have to work outside the browser, we should talk.</h2>
+          <h2 className="section-heading">If your team builds real systems, I would love to talk.</h2>
           <p className="section-copy">
-            I am especially interested in embedded software, robotics, controls, computer vision at the edge, and
-            practical product engineering.
+            I am especially interested in embedded software, robotics, controls, edge AI, and practical freelance
+            product engineering work.
           </p>
         </div>
         <div className="button-row" style={{ marginTop: 0 }}>

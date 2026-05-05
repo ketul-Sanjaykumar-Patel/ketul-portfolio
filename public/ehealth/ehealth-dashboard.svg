@@ -1,0 +1,48 @@
+<svg width="1400" height="860" viewBox="0 0 1400 860" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="860" rx="32" fill="#F6F8FC"/>
+  <rect x="62" y="64" width="1276" height="732" rx="28" fill="#0F1728"/>
+  <rect x="62" y="64" width="1276" height="84" rx="28" fill="#162033"/>
+  <circle cx="118" cy="106" r="10" fill="#F35F5F"/>
+  <circle cx="150" cy="106" r="10" fill="#F3BE5F"/>
+  <circle cx="182" cy="106" r="10" fill="#62D56B"/>
+  <text x="228" y="114" fill="#E9F0FF" font-family="Arial, sans-serif" font-size="28" font-weight="700">
+    e-Health Smart Home Dashboard
+  </text>
+
+  <rect x="112" y="192" width="356" height="170" rx="24" fill="#18253A" stroke="#2A3B5A"/>
+  <text x="144" y="236" fill="#7EB5FF" font-family="Arial, sans-serif" font-size="18" font-weight="700">HOME TEMPERATURE</text>
+  <text x="144" y="302" fill="#F8FCFF" font-family="Arial, sans-serif" font-size="54" font-weight="700">22.8 C</text>
+  <text x="144" y="334" fill="#8FA6C8" font-family="Arial, sans-serif" font-size="16">Fixed node | BMP280</text>
+
+  <rect x="510" y="192" width="356" height="170" rx="24" fill="#18253A" stroke="#2A3B5A"/>
+  <text x="542" y="236" fill="#7EB5FF" font-family="Arial, sans-serif" font-size="18" font-weight="700">PULSE</text>
+  <text x="542" y="302" fill="#F8FCFF" font-family="Arial, sans-serif" font-size="54" font-weight="700">78 BPM</text>
+  <rect x="542" y="322" width="170" height="24" rx="12" fill="#1E3A5F"/>
+  <text x="560" y="338" fill="#A9C6F8" font-family="Arial, sans-serif" font-size="13">Alert logic on server</text>
+
+  <rect x="908" y="192" width="318" height="170" rx="24" fill="#311D1D" stroke="#6C2E2E"/>
+  <text x="940" y="236" fill="#FF8A8A" font-family="Arial, sans-serif" font-size="18" font-weight="700">ALERT PANEL</text>
+  <text x="940" y="288" fill="#FFF2F2" font-family="Arial, sans-serif" font-size="32" font-weight="700">Fall or vital alert</text>
+  <text x="940" y="324" fill="#FFB7B7" font-family="Arial, sans-serif" font-size="16">Visible in dashboard and logs</text>
+
+  <rect x="112" y="412" width="356" height="170" rx="24" fill="#18253A" stroke="#2A3B5A"/>
+  <text x="144" y="456" fill="#7EE0C1" font-family="Arial, sans-serif" font-size="18" font-weight="700">BODY TEMPERATURE</text>
+  <text x="144" y="522" fill="#F8FCFF" font-family="Arial, sans-serif" font-size="54" font-weight="700">36.7 C</text>
+  <text x="144" y="554" fill="#8FA6C8" font-family="Arial, sans-serif" font-size="16">Mobile node | MLX90614</text>
+
+  <rect x="510" y="412" width="356" height="170" rx="24" fill="#18253A" stroke="#2A3B5A"/>
+  <text x="542" y="456" fill="#7EE0C1" font-family="Arial, sans-serif" font-size="18" font-weight="700">STEPS TODAY</text>
+  <text x="542" y="522" fill="#F8FCFF" font-family="Arial, sans-serif" font-size="54" font-weight="700">142</text>
+  <text x="542" y="554" fill="#8FA6C8" font-family="Arial, sans-serif" font-size="16">MPU6050 step counter</text>
+
+  <rect x="908" y="412" width="318" height="170" rx="24" fill="#18253A" stroke="#2A3B5A"/>
+  <text x="940" y="456" fill="#FFD77A" font-family="Arial, sans-serif" font-size="18" font-weight="700">GPS LOCATION</text>
+  <text x="940" y="516" fill="#F8FCFF" font-family="Arial, sans-serif" font-size="30" font-weight="700">48.8566, 2.3522</text>
+  <text x="940" y="550" fill="#8FA6C8" font-family="Arial, sans-serif" font-size="16">Shown only when fix is valid</text>
+
+  <rect x="112" y="628" width="1114" height="110" rx="24" fill="#162033" stroke="#2A3B5A"/>
+  <text x="148" y="676" fill="#EAF1FF" font-family="Arial, sans-serif" font-size="24" font-weight="700">Gateway summary</text>
+  <text x="148" y="714" fill="#9DB1CE" font-family="Arial, sans-serif" font-size="18">
+    Flask API receives two node streams, stores them in SQLite, and serves a browser view that works for demos and operator checks.
+  </text>
+</svg>

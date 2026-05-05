@@ -37,7 +37,7 @@ export default function ProjectDetailPage() {
     borderRadius: 8, padding: "1.5rem", marginBottom: "1.5rem",
   };
 
-  const ImageCard = ({ img, height }: { img: { src: string; caption: string }; height?: number }) => (
+  const renderImageCard = (img: { src: string; caption: string }, height?: number) => (
     <div
       onClick={() => setLightbox({ type: "image", src: img.src, caption: img.caption })}
       style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)", cursor: "zoom-in" }}
@@ -174,6 +174,45 @@ export default function ProjectDetailPage() {
       {/* ══ OVERVIEW ══ */}
       {activeTab === "overview" && (
         <>
+          {p.story?.overviewMetrics && p.story.overviewMetrics.length > 0 && (
+            <section style={{ marginBottom: "2.5rem" }}>
+              <h2 style={sectionLabel}>SNAPSHOT</h2>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+                  gap: "1rem",
+                }}
+              >
+                {p.story.overviewMetrics.map((metric) => (
+                  <div
+                    key={metric.label}
+                    style={{
+                      background: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 8,
+                      padding: "1rem 1.1rem",
+                    }}
+                  >
+                    <div style={{ color: "var(--accent2)", fontWeight: 700, fontSize: "1rem", lineHeight: 1.3 }}>
+                      {metric.value}
+                    </div>
+                    <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: "0.35rem", lineHeight: 1.5 }}>
+                      {metric.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {p.story?.diagram && (
+            <div style={card}>
+              <h2 style={sectionLabel}>ARCHITECTURE</h2>
+              {renderImageCard(p.story.diagram, 320)}
+            </div>
+          )}
+
           <section style={{ marginBottom: "2.5rem" }}>
             <h2 style={sectionLabel}>WHAT I BUILT</h2>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.7rem" }}>
@@ -185,6 +224,108 @@ export default function ProjectDetailPage() {
               ))}
             </ul>
           </section>
+
+          {p.story?.tables?.map((table) => (
+            <section key={table.title} style={{ marginBottom: "2.5rem" }}>
+              <h2 style={sectionLabel}>{table.title.toUpperCase()}</h2>
+              <div
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  overflowX: "auto",
+                }}
+              >
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
+                  <thead>
+                    <tr>
+                      {table.columns.map((column) => (
+                        <th
+                          key={column}
+                          style={{
+                            textAlign: "left",
+                            padding: "0.9rem 1rem",
+                            fontSize: "0.74rem",
+                            letterSpacing: "0.08em",
+                            color: "var(--accent2)",
+                            borderBottom: "1px solid var(--border)",
+                          }}
+                        >
+                          {column}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {table.rows.map((row, rowIdx) => (
+                      <tr key={`${table.title}-${rowIdx}`}>
+                        {row.map((cell, cellIdx) => (
+                          <td
+                            key={`${table.title}-${rowIdx}-${cellIdx}`}
+                            style={{
+                              padding: "0.85rem 1rem",
+                              fontSize: "0.86rem",
+                              color: "var(--muted)",
+                              lineHeight: 1.6,
+                              borderBottom: rowIdx < table.rows.length - 1 ? "1px solid var(--border)" : "none",
+                            }}
+                          >
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {table.note && (
+                <p style={{ color: "var(--muted)", fontSize: "0.82rem", lineHeight: 1.7, marginTop: "0.85rem" }}>
+                  {table.note}
+                </p>
+              )}
+            </section>
+          ))}
+
+          {p.story?.challenges && p.story.challenges.length > 0 && (
+            <section style={{ marginBottom: "2.5rem" }}>
+              <h2 style={sectionLabel}>ENGINEERING CHALLENGES</h2>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: "1rem",
+                }}
+              >
+                {p.story.challenges.map((challenge) => (
+                  <div
+                    key={challenge.title}
+                    style={{
+                      background: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 8,
+                      padding: "1.1rem 1.15rem",
+                    }}
+                  >
+                    <h3 style={{ margin: 0, color: "var(--text)", fontSize: "1rem", lineHeight: 1.4 }}>{challenge.title}</h3>
+                    <p style={{ margin: "0.7rem 0 0", color: "var(--muted)", fontSize: "0.88rem", lineHeight: 1.7 }}>
+                      {challenge.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {p.story?.outcomes && p.story.outcomes.length > 0 && (
+            <div style={card}>
+              <h2 style={sectionLabel}>OUTCOMES</h2>
+              <ul style={{ margin: 0, paddingLeft: "1.1rem", color: "var(--muted)", lineHeight: 1.8 }}>
+                {p.story.outcomes.map((outcome) => (
+                  <li key={outcome}>{outcome}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div style={card}>
             <h2 style={sectionLabel}>RESULTS</h2>
@@ -282,7 +423,7 @@ export default function ProjectDetailPage() {
                   {p.tabs.results.images.length > 2 && (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
                       {p.tabs.results.images.slice(2).map((img, i) => (
-                        <ImageCard key={i} img={img} height={180} />
+                        <div key={i}>{renderImageCard(img, 180)}</div>
                       ))}
                     </div>
                   )}
@@ -291,7 +432,7 @@ export default function ProjectDetailPage() {
                 /* All other projects — standard auto grid */
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
                   {p.tabs.results.images.map((img, i) => (
-                    <ImageCard key={i} img={img} height={200} />
+                    <div key={i}>{renderImageCard(img, 200)}</div>
                   ))}
                 </div>
               )}

@@ -17,6 +17,22 @@ export type ProjectTabs = {
   };
 };
 
+export type ProjectStory = {
+  overviewMetrics?: { label: string; value: string }[];
+  diagram?: { src: string; caption: string };
+  tables?: {
+    title: string;
+    columns: string[];
+    rows: string[][];
+    note?: string;
+  }[];
+  challenges?: {
+    title: string;
+    text: string;
+  }[];
+  outcomes?: string[];
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -27,6 +43,7 @@ export type Project = {
   bullets: string[];
   results: string;
   lessons: string;
+  story?: ProjectStory;
   tabs?: ProjectTabs;
 };
 
@@ -43,6 +60,310 @@ export const projectCategories = [
 // ── Projects ──────────────────────────────────────────────────────────────────
 
 export const projects: Project[] = [
+
+  {
+    slug: "ehealth-iot-platform",
+    title: "e-Health IoT Platform for Assisted Monitoring",
+    summary:
+      "Built a two-node e-health monitoring platform with Arduino R4 WiFi boards, a Raspberry Pi 5 gateway, and a live Flask dashboard to combine room sensing, body vitals, fall detection, GPS, and alert handling in one deployable prototype.",
+    tags: ["Arduino R4 WiFi", "Raspberry Pi 5", "Flask", "SQLite", "I2C", "UART", "WiFi", "HTTP", "MPU6050", "GPS"],
+    category: "Robotics & Embedded",
+    bullets: [
+      "Designed one fixed node and one mobile node, both built on Arduino R4 WiFi, then centralized their data on a Raspberry Pi 5 gateway.",
+      "Integrated 9 sensor and module inputs across I2C, UART, analog, and WiFi transport, then normalized readings into JSON APIs and SQLite storage.",
+      "Implemented fall detection, step counting, abnormal vital alerts, GPS tagging, and a browser dashboard that operators could understand without reading source code first.",
+      "Documented the wiring, addresses, API routes, and data flow clearly enough for review, debugging, and a live jury demonstration path.",
+    ],
+    results:
+      "As of May 2026, the platform is collecting fixed-node room and vital data plus mobile-node body, motion, and location data into one dashboard with historical storage and visible alert states. The next milestone is the live jury demonstration scheduled for June 2026.",
+    lessons:
+      "The hard part was not reading any single sensor. It was making shared buses, fall thresholds, wireless delivery, persistence, and operator-facing alerts behave predictably together. Splitting the system into a fixed node, a mobile node, and a Raspberry Pi gateway made the whole platform easier to debug and explain.",
+    story: {
+      overviewMetrics: [
+        { label: "Sensors", value: "9 integrated inputs" },
+        { label: "Nodes", value: "2 Arduino R4 WiFi platforms" },
+        { label: "Protocols", value: "I2C, UART, WiFi, HTTP" },
+        { label: "Interface", value: "Live Flask dashboard" },
+      ],
+      diagram: {
+        src: "/ehealth/ehealth-architecture.svg",
+        caption:
+          "End-to-end flow from the fixed and mobile Arduino nodes into the Raspberry Pi 5 gateway, SQLite storage, and live browser dashboard.",
+      },
+      tables: [
+        {
+          title: "Sensor map",
+          columns: ["Node", "Sensor or module", "Link", "Address or port"],
+          rows: [
+            ["Fixed", "BMP280", "I2C", "0x76 or 0x77"],
+            ["Fixed", "MAX30105 pulse sensor", "I2C", "0x57"],
+            ["Fixed", "LCD display", "I2C", "0x27 or 0x3F"],
+            ["Fixed", "MPU6050 presence sensing", "I2C", "0x68"],
+            ["Fixed", "Alcohol sensor", "Analog", "A0"],
+            ["Mobile", "MPU6050 fall and steps", "I2C", "0x68"],
+            ["Mobile", "MLX90614 IR temperature", "I2C", "0x5A"],
+            ["Mobile", "LCD display", "I2C", "0x27 or 0x3F"],
+            ["Mobile", "GPS module", "UART", "Serial1"],
+          ],
+          note:
+            "Both Arduino nodes use one shared I2C bus for their local sensors. GPS is the exception and rides on Serial1 rather than the I2C bus.",
+        },
+      ],
+      challenges: [
+        {
+          title: "Fall detection without constant false alarms",
+          text:
+            "Used a two-stage accelerometer rule: detect a high-g spike first, then confirm stillness inside a time window before raising the alert. That kept the logic explainable and tunable on-device.",
+        },
+        {
+          title: "Shared I2C bus planning",
+          text:
+            "Mapped device addresses up front so multiple sensors could coexist cleanly on each Arduino R4 WiFi board without bus conflicts or messy trial-and-error wiring.",
+        },
+        {
+          title: "Wireless pipeline across three layers",
+          text:
+            "Each Arduino assembled JSON locally and posted to the Raspberry Pi 5 over WiFi, letting the Pi own persistence, latest-state APIs, and dashboard rendering.",
+        },
+        {
+          title: "Alerts that stay actionable",
+          text:
+            "Abnormal pulse, temperature, alcohol level, and fall events were surfaced both in logs and the browser dashboard, with a physical cancel button on the mobile node for fall alerts.",
+        },
+      ],
+      outcomes: [
+        "Delivered a two-node prototype that combines room monitoring and wearable or mobile health sensing in one system.",
+        "Centralized live readings and historical records on a Raspberry Pi 5 using Flask endpoints and SQLite storage.",
+        "Prepared the platform for a live jury demonstration scheduled for June 2026.",
+        "Packaged the work into code, architecture, and documentation that reads clearly to recruiters as well as technical reviewers.",
+      ],
+    },
+    tabs: {
+      code: {
+        filename: "rpi_server.py",
+        language: "python",
+        description:
+          "Raspberry Pi 5 gateway server that receives JSON from both Arduino nodes, stores it in SQLite, and serves a live Flask dashboard.",
+        snippet: `from flask import Flask, request, jsonify
+import sqlite3
+from datetime import datetime
+
+app = Flask(__name__)
+DB_PATH = "ehealth.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS fixed_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            temperature REAL,
+            pressure REAL,
+            pulse INTEGER,
+            alcohol INTEGER,
+            presence INTEGER,
+            alert TEXT
+        )
+    """)
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS mobile_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            body_temp REAL,
+            amb_temp REAL,
+            steps INTEGER,
+            fall INTEGER,
+            lat REAL,
+            lng REAL,
+            gps_valid INTEGER
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+@app.route("/api/fixed", methods=["POST"])
+def receive_fixed():
+    data = request.get_json()
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO fixed_data
+        (timestamp, temperature, pressure, pulse, alcohol, presence, alert)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        ts,
+        data.get("temperature", 0),
+        data.get("pressure", 0),
+        data.get("pulse", 0),
+        data.get("alcohol", 0),
+        1 if data.get("presence") else 0,
+        data.get("alert", "")
+    ))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok", "timestamp": ts}), 200`,
+      },
+      extraFiles: [
+        {
+          filename: "arduino1_fixed.ino",
+          language: "cpp",
+          description:
+            "Fixed node firmware that reads room and vital sensors, raises simple threshold alerts, and posts JSON to the Raspberry Pi gateway every 2 seconds.",
+          snippet: `#include <Wire.h>
+#include <WiFiS3.h>
+#include <Adafruit_BMP280.h>
+#include <MAX30105.h>
+#include <LiquidCrystal_I2C.h>
+
+const char* SSID = "YOUR_WIFI_SSID";
+const char* PASSWORD = "YOUR_WIFI_PASSWORD";
+const char* RPI_IP = "192.168.1.100";
+const int RPI_PORT = 5000;
+const char* ENDPOINT = "/api/fixed";
+
+Adafruit_BMP280 bmp;
+MAX30105 particleSensor;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+const int ALCOHOL_PIN = A0;
+
+void loop() {
+  float temp = bmp.readTemperature();
+  float pressure = bmp.readPressure() / 100.0F;
+  int pulse = readPulse();
+  int alcohol = analogRead(ALCOHOL_PIN);
+  bool presence = detectPresence();
+
+  String alert = "";
+  if (pulse > 120 || pulse < 40) alert = "PULSE_ALERT";
+  if (temp > 38.0) alert = "TEMP_ALERT";
+  if (alcohol > 600) alert = "ALCOHOL_ALERT";
+
+  String json = "{";
+  json += "\\"node\\":\\"fixed\\",";
+  json += "\\"temperature\\":" + String(temp, 2) + ",";
+  json += "\\"pressure\\":" + String(pressure, 2) + ",";
+  json += "\\"pulse\\":" + String(pulse) + ",";
+  json += "\\"alcohol\\":" + String(alcohol) + ",";
+  json += "\\"presence\\":" + String(presence ? "true" : "false") + ",";
+  json += "\\"alert\\":\\"" + alert + "\\"";
+  json += "}";
+
+  sendToRPi(json);
+}`,
+        },
+        {
+          filename: "arduino2_mobile.ino",
+          language: "cpp",
+          description:
+            "Mobile node firmware that tracks body temperature, steps, GPS position, and a cancelable fall alert before posting its state to the gateway.",
+          snippet: `#include <Wire.h>
+#include <WiFiS3.h>
+#include <MPU6050.h>
+#include <Adafruit_MLX90614.h>
+#include <LiquidCrystal_I2C.h>
+#include <TinyGPS++.h>
+
+MPU6050 mpu;
+Adafruit_MLX90614 mlx;
+TinyGPSPlus gps;
+bool fallDetected = false;
+bool alertActive = false;
+unsigned long fallTime = 0;
+const int FALL_THRESHOLD = 2.5 * 16384;
+const unsigned long FALL_CONFIRM_MS = 2000;
+
+void loop() {
+  while (Serial1.available()) gps.encode(Serial1.read());
+
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  checkFall(ax, ay, az);
+  countStep(az);
+
+  float bodyTemp = mlx.readObjectTempC();
+  float ambTemp = mlx.readAmbientTempC();
+  float lat = gps.location.isValid() ? gps.location.lat() : 0.0;
+  float lng = gps.location.isValid() ? gps.location.lng() : 0.0;
+
+  String json = "{";
+  json += "\\"node\\":\\"mobile\\",";
+  json += "\\"body_temp\\":" + String(bodyTemp, 2) + ",";
+  json += "\\"amb_temp\\":" + String(ambTemp, 2) + ",";
+  json += "\\"steps\\":" + String(stepCount) + ",";
+  json += "\\"fall\\":" + String(alertActive ? "true" : "false") + ",";
+  json += "\\"lat\\":" + String(lat, 6) + ",";
+  json += "\\"lng\\":" + String(lng, 6) + ",";
+  json += "\\"gps_valid\\":" + String(gps.location.isValid() ? "true" : "false");
+  json += "}";
+
+  sendToRPi(json);
+}`,
+        },
+        {
+          filename: "fall_detection.ino",
+          language: "cpp",
+          description:
+            "Standalone spike-window detector used to tune the fall logic before folding it into the mobile node firmware.",
+          snippet: `#include <Wire.h>
+#include <MPU6050.h>
+
+MPU6050 mpu;
+const float SPIKE_THRESHOLD_G = 2.5;
+const float STILL_THRESHOLD_G = 0.3;
+const unsigned long WINDOW_MS = 500;
+const float LSB_PER_G = 4096.0;
+
+bool spikeDetected = false;
+unsigned long spikeTime = 0;
+
+void loop() {
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  float ax_g = ax / LSB_PER_G;
+  float ay_g = ay / LSB_PER_G;
+  float az_g = az / LSB_PER_G;
+  float mag = sqrt(ax_g * ax_g + ay_g * ay_g + az_g * az_g);
+  unsigned long now = millis();
+
+  if (!spikeDetected && mag > SPIKE_THRESHOLD_G) {
+    spikeDetected = true;
+    spikeTime = now;
+  } else if (spikeDetected) {
+    unsigned long elapsed = now - spikeTime;
+    if (elapsed <= WINDOW_MS && mag < STILL_THRESHOLD_G) {
+      onFallDetected(now, elapsed);
+      spikeDetected = false;
+    } else if (elapsed > WINDOW_MS) {
+      spikeDetected = false;
+    }
+  }
+}`,
+        },
+      ],
+      results: {
+        metrics: [
+          { label: "Integrated inputs", value: "9 sensor and module channels" },
+          { label: "Upload interval", value: "2 seconds per node" },
+          { label: "Gateway surface", value: "2 POST APIs, 2 GET APIs, Flask dashboard" },
+          { label: "Persistence", value: "SQLite tables for fixed and mobile telemetry" },
+        ],
+        images: [
+          {
+            src: "/ehealth/ehealth-architecture.svg",
+            caption: "System architecture from Arduino nodes through the Raspberry Pi gateway into storage and the browser dashboard.",
+          },
+          {
+            src: "/ehealth/ehealth-dashboard.svg",
+            caption: "Dashboard summary showing the fixed-node vitals, mobile-node telemetry, and fall alert visibility.",
+          },
+        ],
+        videos: [],
+      },
+    },
+  },
 
   // ══════════════════════════════════════════════════════════════════
   //  ROBOTICS & EMBEDDED
@@ -292,66 +613,214 @@ void motor(int sL, int sR) {
   // ── 2. Pi-AI Robot Guidance ───────────────────────────────────────
   {
     slug: "pi-ai-robot-guidance",
-    title: "Pi-AI: Robot Guidance (Raspberry Pi 5 + MCU)",
-    summary: "Real-time direction classification from camera input, robust motor commands over UART, and offline-first architecture on Raspberry Pi 5.",
-    tags: ["Raspberry Pi 5", "Embedded Linux", "UART", "Python", "TFLite", "Robotics"],
+    title: "Robot Autopilot: Hailo-8L + EDGEVISION",
+    summary: "A fused robot guidance stack for Raspberry Pi 5 that combines Hailo HEF inference, structural edge analysis, decision fusion, and UART motor control to a Tiva MCU.",
+    tags: ["Raspberry Pi 5", "Hailo-8L", "OpenCV", "Picamera2", "UART", "Embedded Linux", "Edge AI", "Robotics"],
     category: "Robotics & Embedded",
-    github: "https://github.com/ketul099/robot_navigation_multiprocess_v2",
     bullets: [
-      "Live camera capture → pre-processing → model inference → UART commands to Tiva.",
-      "Safety logic: confidence threshold + short command bursts to avoid erratic motion.",
-      "Designed for offline operation and reproducible deployment.",
+      "Built a full autopilot loop that fuses Hailo direction classification with EDGEVISION geometry cues before sending commands to the motor controller.",
+      "Upgraded the model pipeline to MobileNetV2 at 224 x 224, exported ONNX plus calibration data, and compiled hardware-specific HEF binaries for Hailo-8L.",
+      "Added centre-line correction, obstacle blocking, HUD overlays, Pi Camera or USB camera support, and headless mode for SSH testing.",
+      "Kept the control path practical: UART to Tiva MCU, confidence gating, deterministic command intervals, and explicit stop fallbacks.",
     ],
-    results: "Stable control loop with confidence gating; clear separation between perception and actuation.",
-    lessons: "In robotics, reliability beats raw accuracy — timeouts, thresholds, and deterministic command timing matter.",
+    results: "This version moves beyond a pure classifier demo. The Pi 5 now runs a fused autonomy stack where Hailo handles fast direction prediction, EDGEVISION adds structural awareness, and the final decision layer can correct drift or stop the robot before unsafe commands are sent.",
+    lessons: "The biggest improvement came from treating autonomy as signal fusion instead of trusting one model output. Edge geometry, confidence thresholds, and stop-first safety logic made the system much more believable in real deployment.",
     tabs: {
       code: {
-        filename: "inference_uart.py",
+        filename: "robot_autopilot.py",
         language: "python",
-        description: "Core inference loop — captures frame, runs TFLite model, sends UART command to Tiva MCU.",
-        snippet: `import tflite_runtime.interpreter as tflite
-import cv2, serial, time
+        description: "Fused autopilot loop - Hailo HEF inference, EDGEVISION edge analysis, decision fusion, HUD overlays, and UART motor control.",
+        snippet: `CLASS_MAP = {
+    0: 'forward_ok',
+    1: 'left_ok',
+    2: 'right_ok',
+    3: 'stop',
+}
 
-LABELS    = ['forward_ok', 'left_ok', 'right_ok', 'stop']
-CMD_MAP   = {'forward_ok': b'F', 'left_ok': b'L', 'right_ok': b'R', 'stop': b'S'}
-THRESHOLD = 0.60
+UART_COMMANDS = {
+    'forward_ok': 'F\\n',
+    'left_ok':    'L\\n',
+    'right_ok':   'R\\n',
+    'stop':       'S\\n',
+}
 
-interp = tflite.Interpreter(model_path="robot_drive.tflite")
-interp.allocate_tensors()
-inp = interp.get_input_details()[0]
-out = interp.get_output_details()[0]
+CONF_THRESHOLD = 0.70
+COMMAND_INTERVAL = 0.15
+OBSTACLE_THRESHOLD = 0.25
 
-uart = serial.Serial('/dev/ttyAMA0', 9600, timeout=0.1)
-cam  = cv2.VideoCapture(2)
+def fuse_decision(nn_label, nn_conf, steer_err, blocked):
+    if blocked:
+        return 'stop', "obstacle_detected"
+    if nn_conf < CONF_THRESHOLD:
+        return 'stop', f"low_conf({nn_conf:.2f})"
+    if nn_label == 'stop':
+        return 'stop', "nn_stop"
+    if abs(steer_err) > 0.35 and nn_label == 'forward_ok':
+        if steer_err < 0:
+            return 'left_ok', f"centre_correct(err={steer_err:.2f})"
+        return 'right_ok', f"centre_correct(err={steer_err:.2f})"
+    return nn_label, "nn"
 
-while True:
-    ret, frame = cam.read()
-    if not ret: continue
-    img = cv2.resize(frame, (640, 480))
-    img = img.astype('float32') / 255.0
-    interp.set_tensor(inp['index'], img[None])
-    interp.invoke()
-    probs = interp.get_tensor(out['index'])[0]
-    conf  = probs.max()
-    label = LABELS[probs.argmax()]
-    cmd = CMD_MAP[label] if conf >= THRESHOLD else b'F'
-    uart.write(cmd)
-    time.sleep(0.25)`,
+with InferVStreams(net_group, in_params, out_params) as pipeline:
+    with net_group.activate():
+        while True:
+            frame = grab_frame(cam, cam_type)
+            out, edges, n_objs, steer_err, blocked = process_edges(frame)
+
+            inp = preprocess(frame)
+            probs = pipeline.infer({in_name: inp})[out_name][0]
+
+            if probs.max() > 10 or probs.min() < -1:
+                probs = np.exp(probs - probs.max())
+                probs = probs / probs.sum()
+
+            nn_conf = float(np.max(probs))
+            nn_idx = int(np.argmax(probs))
+            nn_label = CLASS_MAP.get(nn_idx, 'stop')
+
+            decision, reason = fuse_decision(nn_label, nn_conf, steer_err, blocked)
+
+            now = time.time()
+            if now - last_cmd_t >= COMMAND_INTERVAL:
+                send_uart(ser, decision)
+                last_cmd_t = now`,
       },
+      extraFiles: [
+        {
+          filename: "train.py",
+          language: "python",
+          description: "Training pipeline - MobileNetV2 classifier, augmentation, calibration export, and ONNX opset 11 output for Hailo compilation.",
+          snippet: `IMG_H = 224
+IMG_W = 224
+ONNX_OPSET = 11
+N_CALIB = 64
+
+def build_model(num_classes: int, finetune: bool = False):
+    base = MobileNetV2(
+        input_shape=(IMG_H, IMG_W, 3),
+        include_top=False,
+        weights='imagenet'
+    )
+    base.trainable = False
+
+    inputs = Input(shape=(IMG_H, IMG_W, 3), name="input_image")
+    x = base(inputs, training=False)
+    x = layers.GlobalAveragePooling2D(name="gap")(x)
+    x = layers.Dropout(0.3)(x)
+    x = layers.Dense(128, activation='relu')(x)
+    outputs = layers.Dense(num_classes, activation='softmax', name="predictions")(x)
+    model = models.Model(inputs=inputs, outputs=outputs, name="robot_drive")
+    return model
+
+def export_calibration_images(dataset_path: str, output_dir: str, n: int = N_CALIB):
+    calib_gen = ImageDataGenerator(rescale=1. / 255).flow_from_directory(
+        dataset_path, target_size=(IMG_H, IMG_W), batch_size=n, class_mode=None, shuffle=True
+    )
+    calib_images = next(calib_gen)
+    np.save(os.path.join(output_dir, 'calibration_images.npy'), calib_images)`,
+        },
+        {
+          filename: "compile_hailo.py",
+          language: "python",
+          description: "Hailo Dataflow Compiler pipeline - parse ONNX, quantize with representative images, and compile HEF for hailo8l or hailo8 targets.",
+          snippet: `INPUT_NODE = "input_image"
+OUTPUT_NODE = "predictions"
+IMG_H = 224
+IMG_W = 224
+
+def parse_onnx(runner: ClientRunner, onnx_path: str):
+    runner.translate_onnx_model(
+        onnx_path,
+        net_name="robot_drive",
+        start_node_names=[INPUT_NODE],
+        end_node_names=[OUTPUT_NODE],
+        net_input_shapes={INPUT_NODE: [None, IMG_H, IMG_W, 3]}
+    )
+
+def optimize_and_quantize(runner: ClientRunner, calib_path: str):
+    calib_images = np.load(calib_path)
+    runner.optimize(calib_images)
+
+def compile_to_hef(runner: ClientRunner, output_dir: str, hw_arch: str) -> str:
+    hef_path = os.path.join(output_dir, f'robot_drive_{hw_arch}.hef')
+    hef_bytes = runner.compile()
+    with open(hef_path, 'wb') as f:
+        f.write(hef_bytes)
+    return hef_path`,
+        },
+        {
+          filename: "edgevision.py",
+          language: "python",
+          description: "Standalone EDGEVISION app - CLAHE, Canny, Hough lines, contour merging, HUD overlays, and Pi Camera or USB camera support.",
+          snippet: `_clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
+
+def process_frame(frame, state):
+    H, W = frame.shape[:2]
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = _clahe.apply(gray)
+
+    ks = state['blur_k'] * 2 + 1
+    blurred = cv2.bilateralFilter(gray, ks, 55, 55)
+    edges = cv2.Canny(blurred, state['canny_lo'], state['canny_hi'])
+
+    if state['ground_boost']:
+        gz = H // 2
+        reg_b = cv2.GaussianBlur(blurred[gz:, :], (9, 9), 0)
+        g_edges = cv2.Canny(reg_b, max(10, state['canny_lo'] // 3), max(30, state['canny_hi'] // 3))
+        edges[gz:, :] = cv2.bitwise_or(edges[gz:, :], g_edges)
+
+    hough_lines = _detect_lines(edges, W, H, state)
+    contours = _merge_nearby_contours(
+        [c for c in cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+         if cv2.contourArea(c) > state['min_area']],
+        merge_dist=40
+    )
+    return frame.copy(), edges, len(contours), len(hough_lines)`,
+        },
+        {
+          filename: "edge_detection_camera.html",
+          language: "html",
+          description: "Browser UI prototype for live edge tuning - camera preview, threshold sliders, blend controls, object outlining, and HUD-style stats.",
+          snippet: `<div class="side-panel">
+  <button class="cam-btn" id="camBtn" onclick="toggleCamera()">START CAMERA</button>
+
+  <div class="section-title">// DETECTION MODE</div>
+  <div class="control-group">
+    <div class="toggle-row">
+      <button class="toggle-btn on" id="btnEdges" onclick="toggleMode('edges')">EDGES</button>
+      <button class="toggle-btn on orange" id="btnObjects" onclick="toggleMode('objects')">OBJECTS</button>
+      <button class="toggle-btn" id="btnOriginal" onclick="toggleMode('original')">BLEND</button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-label">LOW THRESHOLD <span id="lowVal">40</span></div>
+    <input type="range" id="lowThresh" min="5" max="150" value="40">
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-val" id="statFps">--</div><div class="stat-lbl">FPS</div></div>
+    <div class="stat-box"><div class="stat-val" id="statEdge">--</div><div class="stat-lbl">EDGES %</div></div>
+  </div>
+</div>`,
+        },
+      ],
       results: {
         metrics: [
-          { label: "Camera",             value: "640×480 @ 4 fps (index 2)" },
-          { label: "Model",              value: "TFLite CNN — 4-class classification" },
-          { label: "Confidence threshold", value: "0.60 (default forward below)" },
-          { label: "Command latency",    value: "< 250 ms end-to-end" },
-          { label: "Motor command burst", value: "0.25 s pulse per decision" },
-          { label: "Serial port",        value: "/dev/ttyAMA0 @ 9600 baud" },
+          { label: "Display camera",        value: "1280 x 720 live HUD on Raspberry Pi 5" },
+          { label: "Inference input",       value: "224 x 224 RGB for MobileNetV2 / Hailo" },
+          { label: "Direction classes",     value: "4 classes - forward, left, right, stop" },
+          { label: "Target accelerator",    value: "Hailo-8L on Raspberry Pi 5" },
+          { label: "Confidence gate",       value: "0.70 minimum confidence before movement" },
+          { label: "Command interval",      value: "0.15 s between UART writes" },
+          { label: "Obstacle fallback",     value: "Centre-zone contour threshold = 25%" },
+          { label: "Loop target",           value: "~30 fps end-to-end, 200+ fps NPU-only target" },
+          { label: "Motor link",            value: "Tiva MCU over /dev/ttyS0 or /dev/ttyAMA0" },
         ],
         images: [
-          // { src: "/projects/pi-ai/setup.jpg", caption: "Pi-AI hardware setup" },
+          { src: "/robot-autopilot/autopilot-stack.svg", caption: "Autopilot stack: Hailo inference + EDGEVISION geometry + UART motor control" },
         ],
         videos: [
-          // { url: "/projects/pi-ai/demo.mp4", caption: "Live navigation demo" },
         ],
       },
     },
@@ -364,7 +833,7 @@ while True:
     summary: "Multiprocess architecture separating camera capture, inference, and motor control into parallel processes for faster, more reliable navigation.",
     tags: ["Python", "Multiprocessing", "Robotics", "Raspberry Pi", "Embedded Linux"],
     category: "Robotics & Embedded",
-    github: "https://github.com/ketul099/robot_navigation_multiprocess_v2",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/robot_navigation_multiprocess_v2",
     bullets: [
       "Decoupled camera, inference, and actuation into separate OS processes.",
       "Used queues for safe inter-process communication.",
@@ -442,7 +911,7 @@ if __name__ == '__main__':
     summary: "Servo-controlled robotic arm gripper with programmatic motion control for pick-and-place tasks.",
     tags: ["Robotics", "Servo", "Embedded", "C++", "Actuation"],
     category: "Robotics & Embedded",
-    github: "https://github.com/ketul099/Robotic_arm_gripper",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/Robotic_arm_gripper",
     bullets: [
       "Designed gripper control logic for precise open/close timing.",
       "Implemented position feedback and motion sequencing.",
@@ -526,7 +995,7 @@ void loop() {
     summary: "PID controller implementation in C++ for precise DC motor speed and position control.",
     tags: ["C++", "PID", "Motor Control", "Embedded", "Control Systems"],
     category: "Robotics & Embedded",
-    github: "https://github.com/ketul099/DC_motor_control_PID",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/DC_motor_control_PID",
     bullets: [
       "Implemented discrete PID with tunable Kp, Ki, Kd gains.",
       "Added anti-windup for integral term to prevent saturation.",
@@ -601,7 +1070,7 @@ void loop() {
     summary: "Neural network trained to classify geometric shapes from image input for embedded-friendly inference.",
     tags: ["Python", "Neural Network", "Computer Vision", "TFLite", "Classification"],
     category: "AI & Machine Learning",
-    github: "https://github.com/ketul099/shapes_recognizes_NN",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/shapes_recognizes_NN",
     bullets: [
       "Trained CNN on synthetic dataset of shapes with augmentations.",
       "Exported model to TFLite for embedded deployment.",
@@ -702,70 +1171,108 @@ open('shapes_model.tflite', 'wb').write(tflite_model)`,
   // ── 7. Hailo Pipeline ─────────────────────────────────────────────
   {
     slug: "hailo-pipeline-notes",
-    title: "Hailo Pipeline: ONNX to HAR to HEF",
-    summary: "Practical workflow for compiling models to Hailo-8L — parsing, quantization, YAML configs, and debugging.",
-    tags: ["Hailo-8L", "ONNX", "Quantization", "YAML", "Edge AI"],
+    title: "Hailo Deployment Pipeline for Robot Direction",
+    summary: "A reproducible path from dataset and MobileNetV2 training to ONNX export, calibration generation, HEF compilation, and Raspberry Pi 5 deployment on Hailo hardware.",
+    tags: ["Hailo-8L", "MobileNetV2", "ONNX", "Quantization", "Raspberry Pi 5", "Edge AI"],
     category: "AI & Machine Learning",
-    github: "https://github.com/ketul099",
     bullets: [
-      "Documented parsing/optimization steps and common failure patterns.",
-      "Created reusable YAML config templates with correct node naming.",
-      "Built repeatable compilation workflow for fast experimentation.",
+      "Moved the model to a Hailo-friendly training setup: MobileNetV2 backbone, 224 x 224 input, and ONNX opset 11 output.",
+      "Exported representative calibration images for post-training quantization and automated the DFC steps in compile_hailo.py.",
+      "Captured the common deployment failure points - node naming, shape divisibility, unsupported ops, and class-map mismatches - in code instead of trial-and-error notes.",
     ],
-    results: "Faster iteration when porting models using a consistent checklist and known-good YAML skeletons.",
-    lessons: "Most failures are shape/node mismatches — treat the pipeline like a compiler: small changes, test often.",
+    results: "The model path is now a real deployment pipeline instead of an experiment chain: train -> export ONNX -> generate calibration set -> compile HEF -> run on Pi. That made it much faster to iterate on robot-direction models for Hailo hardware.",
+    lessons: "Compiler-friendly model design matters as much as raw accuracy. Input size, opset version, node names, and representative quantization images decide whether a model survives deployment.",
     tabs: {
       code: {
-        filename: "robo_classification.yaml",
-        language: "cpp",
-        description: "Hailo YAML config — defines input/output nodes, normalization, and task type for model compilation.",
-        snippet: `# Hailo Model Zoo — Custom Classification YAML
-# Used to compile robot_drive_model.onnx to .hef for Hailo-8L
+        filename: "compile_hailo.py",
+        language: "python",
+        description: "Compilation pipeline - translate ONNX into Hailo IR, quantize with calibration images, then emit HEF for hailo8l or hailo8.",
+        snippet: `INPUT_NODE = "input_image"
+OUTPUT_NODE = "predictions"
+IMG_H = 224
+IMG_W = 224
 
-base_config:
-  - base_network: hailo_classification  # base task type
+def parse_onnx(runner: ClientRunner, onnx_path: str):
+    runner.translate_onnx_model(
+        onnx_path,
+        net_name="robot_drive",
+        start_node_names=[INPUT_NODE],
+        end_node_names=[OUTPUT_NODE],
+        net_input_shapes={INPUT_NODE: [None, IMG_H, IMG_W, 3]}
+    )
 
-parser:
-  nodes: null  # auto-detect from ONNX graph
+def optimize_and_quantize(runner: ClientRunner, calib_path: str):
+    calib_images = np.load(calib_path)
+    assert calib_images.shape[1:] == (IMG_H, IMG_W, 3)
+    assert calib_images.dtype == np.float32
+    runner.optimize(calib_images)
 
-alls:
-  # Normalization: match training preprocessing (rescale=1/255)
-  normalization_params:
-    - mean: [0.0, 0.0, 0.0]
-      std:  [255.0, 255.0, 255.0]
-
-network:
-  network_name: robot_drive_model
-
-# Input node — must match ONNX input name
-input_layer:
-  name: "input"
-  shape: [1, 240, 320, 3]
-  data_type: uint8
-
-# Output node — must match Keras layer name
-output_layer:
-  name: "dense_1"
-
-# Post-processing: softmax for 4-class classification
-postprocess:
-  task: classification
-  classes: 4
-  labels:
-    - forward_ok
-    - left_ok
-    - right_ok
-    - stop`,
+def compile_to_hef(runner: ClientRunner, output_dir: str, hw_arch: str) -> str:
+    hef_path = os.path.join(output_dir, f'robot_drive_{hw_arch}.hef')
+    hef_bytes = runner.compile()
+    with open(hef_path, 'wb') as f:
+        f.write(hef_bytes)
+    return hef_path`,
       },
+      extraFiles: [
+        {
+          filename: "train.py",
+          language: "python",
+          description: "Training and export step tuned for Hailo deployment - MobileNetV2, opset 11 ONNX export, and representative calibration output.",
+          snippet: `IMG_H = 224
+IMG_W = 224
+ONNX_OPSET = 11
+N_CALIB = 64
+
+base = MobileNetV2(
+    input_shape=(IMG_H, IMG_W, 3),
+    include_top=False,
+    weights='imagenet'
+)
+
+inputs = Input(shape=(IMG_H, IMG_W, 3), name="input_image")
+x = base(inputs, training=False)
+x = layers.GlobalAveragePooling2D(name="gap")(x)
+outputs = layers.Dense(num_classes, activation='softmax', name="predictions")(x)
+
+spec = (tf.TensorSpec((None, IMG_H, IMG_W, 3), tf.float32, name="input_image"),)
+tf2onnx.convert.from_keras(model, input_signature=spec, opset=ONNX_OPSET, output_path=onnx_path)`,
+        },
+        {
+          filename: "robot_direction.yaml",
+          language: "yaml",
+          description: "Earlier Hailo model-zoo style config used during experiments with TFLite-based compilation and node mapping.",
+          snippet: `base:
+- base/mobilenet.yaml
+network:
+  network_name: robot_direction
+paths:
+  network_path:
+  - /local/workspace/robot_compile/direction_classifier_model.tflite
+  alls_script: /local/workspace/robot_compile/robot_direction.alls
+parser:
+  nodes:
+  - serving_default_input_image:0
+  - StatefulPartitionedCall:0`,
+        },
+        {
+          filename: "robot_direction.alls",
+          language: "yaml",
+          description: "Normalization script for Hailo experiments - centres pixel values into the range expected by the compiled classifier.",
+          snippet: `normalization1 = normalization([127.5, 127.5, 127.5], [127.5, 127.5, 127.5])`,
+        },
+      ],
       results: {
         metrics: [
-          { label: "Target hardware",  value: "Hailo-8L M.2 on Raspberry Pi 5" },
-          { label: "Input format",     value: "ONNX (opset 13)" },
-          { label: "Output format",    value: ".hef (Hailo Executable Format)" },
-          { label: "Classes",          value: "4 — forward, left, right, stop" },
+          { label: "Backbone",          value: "MobileNetV2 classifier for robot direction" },
+          { label: "Input shape",       value: "224 x 224 x 3 (divisible for Hailo constraints)" },
+          { label: "Export format",     value: "ONNX opset 11 + calibration_images.npy" },
+          { label: "Compilation target", value: "hailo8l or hailo8 hardware profiles" },
+          { label: "Quantization set",  value: "64 float32 representative images by default" },
+          { label: "HEF output",        value: "robot_drive_hailo8l.hef for Pi 5 deployment" },
         ],
         images: [
-          // { src: "/projects/hailo/pipeline.png", caption: "ONNX to HEF compilation pipeline" },
+          { src: "/hailo/compiler-flow.svg", caption: "Deployment flow from dataset to HEF on Hailo hardware" },
         ],
         videos: [],
       },
@@ -779,7 +1286,7 @@ postprocess:
     summary: "Fully offline AI pipeline for road/path detection without cloud dependency, designed for edge deployment.",
     tags: ["Python", "Edge AI", "Computer Vision", "Offline", "Embedded Linux"],
     category: "AI & Machine Learning",
-    github: "https://github.com/ketul099/Private-AI-road",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/Private-AI-road",
     bullets: [
       "Built end-to-end inference pipeline running entirely on local hardware.",
       "Optimized for low-power, offline-first embedded deployment.",
@@ -855,7 +1362,7 @@ cap.release(); cv2.destroyAllWindows()`,
     summary: "DTMF signal generation and detection in MATLAB — frequency analysis of telephone signaling tones.",
     tags: ["MATLAB", "Signal Processing", "FFT", "DTMF", "Audio"],
     category: "Signal Processing & MATLAB",
-    github: "https://github.com/ketul099/Matlab_DTMF_tone_processes-",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/Matlab_DTMF_tone_processes-",
     bullets: [
       "Generated DTMF tones by summing two sinusoids per digit.",
       "Detected digits using FFT frequency analysis.",
@@ -927,7 +1434,7 @@ fprintf('Detected freqs: %.0f Hz, %.0f Hz\\n', f(idx(1)), f(idx(2)));`,
     summary: "Image processing project implementing pixel shifting and spatial transforms in MATLAB.",
     tags: ["MATLAB", "Image Processing", "Signal Processing", "Spatial Transforms"],
     category: "Signal Processing & MATLAB",
-    github: "https://github.com/ketul099/Matlab_Image_pixel_shifting",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/Matlab_Image_pixel_shifting",
     bullets: [
       "Implemented pixel shifting operations in spatial domain.",
       "Analyzed effects of transforms on image structure.",
@@ -999,7 +1506,7 @@ figure; imshow(uint8(diff_img)); title('Pixel Difference');`,
     summary: "Cross-platform desktop/embedded UI application built with Qt and QML featuring timer functionality and multi-screen navigation.",
     tags: ["Qt", "QML", "C++", "UI", "Cross-platform"],
     category: "Software & Apps",
-    github: "https://github.com/ketul099/qt-qml-timer-navigation",
+    github: "https://github.com/ketul-Sanjaykumar-Patel/qt-qml-timer-navigation",
     bullets: [
       "Built multi-screen navigation flow using QML StackView.",
       "Implemented countdown timer with start/stop/reset controls.",

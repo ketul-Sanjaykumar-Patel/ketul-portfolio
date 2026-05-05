@@ -2,7 +2,7 @@
 
 const items = [
   {
-    href: "https://github.com/ketul099",
+    href: "https://github.com/ketul-Sanjaykumar-Patel",
     label: "GitHub",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
