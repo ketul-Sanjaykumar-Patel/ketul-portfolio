@@ -11,12 +11,10 @@ export function Button({
   className,
   variant = "default",
   size = "default",
-  asChild,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   size?: Size;
-  asChild?: boolean;
 }) {
   const base =
     "inline-flex items-center justify-center rounded-xl text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none";
@@ -29,12 +27,6 @@ export function Button({
     default: "h-10 px-4",
     icon: "h-10 w-10",
   };
-
-  if (asChild) {
-    // @ts-ignore
-    const Child = props.children?.type;
-    return props.children;
-  }
 
   return (
     <button
