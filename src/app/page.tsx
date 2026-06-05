@@ -5,16 +5,27 @@ import { SocialLinks } from "@/components/social-links";
 import { projects } from "@/lib/projects";
 
 export default function HomePage() {
-  const featured = projects.slice(0, 3);
+  const featuredSlugs = ["dc-motor-pid", "robot-neural-network-movement", "ehealth-iot-platform"];
+  const featured = featuredSlugs
+    .map((slug) => projects.find((project) => project.slug === slug))
+    .filter((project): project is NonNullable<typeof project> => Boolean(project));
   const projectTags = [
+    "PWM",
+    "PID",
+    "Motor Control",
+    "Validation",
     "Raspberry Pi 5",
     "C and C++",
     "Python",
     "Embedded Linux",
-    "TFLite",
     "Hailo-8L",
-    "Qt and QML",
-    "Robotics",
+  ];
+  const targetRoles = [
+    "Embedded Software Engineer",
+    "Embedded Validation Engineer",
+    "Motor Control Engineer",
+    "Power Electronics Engineer",
+    "Edge AI Engineer",
   ];
   const currentFocus = [
     {
@@ -36,13 +47,17 @@ export default function HomePage() {
   ];
   const quickStats = [
     { value: `${projects.length}+`, label: "project case studies" },
-    { value: "4", label: "main technical tracks" },
+    { value: "5", label: "main technical tracks" },
     { value: "offline-first", label: "deployment mindset" },
   ];
   const strengths = [
     {
-      title: "Embedded and robotics",
-      text: "Raspberry Pi, microcontroller communication, motor control, sensor-driven behavior, and real hardware constraints.",
+      title: "Embedded control systems",
+      text: "Raspberry Pi, microcontroller communication, PWM actuation, UART and I2C integration, and software that stays close to hardware reality.",
+    },
+    {
+      title: "Motor control and validation",
+      text: "PID loops, tuning, response testing, anti-windup, and debugging behavior in a way that is useful for both control and validation roles.",
     },
     {
       title: "Edge AI deployment",
@@ -50,11 +65,11 @@ export default function HomePage() {
     },
     {
       title: "Technical communication",
-      text: "I like explaining what was built, why it works, and what failed during implementation without hiding the messy parts.",
+      text: "I like explaining what was built, how it was tested, and what failed during implementation without hiding the messy parts.",
     },
     {
-      title: "Best fit teams",
-      text: "Teams building physical products, automation, robotics, edge AI, or embedded devices that need practical engineers.",
+      title: "Learning mindset",
+      text: "I am comfortable stepping into tools or domains I have not used yet, learning fast from documentation and testing, and becoming useful quickly on real systems.",
     },
   ];
 
@@ -62,12 +77,19 @@ export default function HomePage() {
     <main className="site-shell page-shell">
       <section className="hero-grid">
         <div className="panel hero-panel">
-          <p className="section-kicker">Paris / Embedded systems / Edge AI / Teaching</p>
-          <h1 className="hero-title">Embedded systems and edge AI for robots that run in the real world.</h1>
+          <p className="section-kicker">Paris / Embedded systems / Motor control / Edge AI / Teaching</p>
+          <h1 className="hero-title">Junior Embedded Systems Engineer</h1>
           <p className="hero-copy">
-            I work across embedded Linux, robotics, computer vision, and on-device inference. Right now that includes
-            teaching at my institute, freelance engineering work, and building systems where software, hardware, and
-            real-world behavior all need to line up.
+            I work across embedded Linux, robotics, motor control, computer vision, and on-device inference. Right now
+            that includes teaching at my institute, freelance engineering work, and building systems where software,
+            hardware, sensing, validation, and real-world behavior all need to line up.
+          </p>
+          <p className="small-copy" style={{ maxWidth: "60ch", marginTop: "0.9rem" }}>
+            I may not have worked with every exact tool yet, but I learn quickly, test carefully, and adapt fast when
+            given a real engineering problem.
+          </p>
+          <p className="small-copy" style={{ maxWidth: "60ch", marginTop: "0.9rem" }}>
+            <strong>Target roles:</strong> {targetRoles.join(" · ")}
           </p>
 
           <div className="button-row">
@@ -114,13 +136,13 @@ export default function HomePage() {
           <div className="hero-microgrid">
             <div className="panel micro-card">
               <span className="eyebrow-label">track</span>
-              <h3 style={{ marginTop: "0.55rem" }}>Systems-first work</h3>
-              <p>Robotics, Linux on Pi, microcontrollers, and deployment-minded AI pipelines.</p>
+              <h3 style={{ marginTop: "0.55rem" }}>Embedded + control</h3>
+              <p>Motor control, Linux on Pi, microcontrollers, sensors, and deployment-minded robotics software.</p>
             </div>
             <div className="panel micro-card">
               <span className="eyebrow-label">approach</span>
               <h3 style={{ marginTop: "0.55rem" }}>Build, test, document</h3>
-              <p>Short loops, clear debugging, and reproducible results matter more than flashy demos.</p>
+              <p>Short loops, validation thinking, clear debugging, and reproducible results matter more than flashy demos.</p>
             </div>
           </div>
         </div>
@@ -177,8 +199,8 @@ export default function HomePage() {
             <p className="section-kicker">Selected work</p>
             <h2 className="section-heading">Selected projects</h2>
             <p className="section-copy">
-              These projects cover embedded control, robot navigation, edge AI inference, signal processing, and
-              deployment-focused experimentation.
+              These projects cover motor control, robot navigation, embedded validation thinking, edge AI inference,
+              and deployment-focused experimentation.
             </p>
           </div>
           <Link href="/projects" className="section-link">
@@ -224,6 +246,22 @@ export default function HomePage() {
               <p>{item.text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="panel cta-banner">
+        <div>
+          <p className="section-kicker">For recruiters</p>
+          <h2 className="section-heading">The strongest fit is embedded work with real hardware in the loop.</h2>
+          <p className="section-copy">
+            My portfolio is strongest where sensing, control, validation, debugging, and deployment all matter:
+            embedded software, motor control, embedded validation, robotics, IoT systems, and edge AI on constrained
+            devices.
+          </p>
+          <p className="section-copy" style={{ marginTop: "0.85rem" }}>
+            Even when a role includes tools I have not used yet, I bring a solid embedded foundation, a fast learning
+            loop, and the habit of proving things through testing rather than guessing.
+          </p>
         </div>
       </section>
 

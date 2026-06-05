@@ -7,7 +7,15 @@ import { projectCategories, projects } from "@/lib/projects";
 
 export default function ProjectsPage() {
   const [active, setActive] = useState("All");
-  const filtered = active === "All" ? projects : projects.filter((project) => project.category === active);
+  const prioritySlugs = ["dc-motor-pid", "robot-neural-network-movement", "ehealth-iot-platform"];
+  const sortedProjects = [...projects].sort((a, b) => {
+    const aIdx = prioritySlugs.indexOf(a.slug);
+    const bIdx = prioritySlugs.indexOf(b.slug);
+    const aRank = aIdx === -1 ? Number.MAX_SAFE_INTEGER : aIdx;
+    const bRank = bIdx === -1 ? Number.MAX_SAFE_INTEGER : bIdx;
+    return aRank - bRank;
+  });
+  const filtered = active === "All" ? sortedProjects : sortedProjects.filter((project) => project.category === active);
   const categoryButtons = projectCategories.map((category) => ({
     category,
     count: category === "All" ? projects.length : projects.filter((project) => project.category === category).length,
@@ -19,8 +27,9 @@ export default function ProjectsPage() {
         <p className="section-kicker">Work index</p>
         <h1 className="page-title">Case studies, experiments, and systems work.</h1>
         <p className="page-copy">
-          Robotics, edge AI, signal processing, embedded systems, and software. Each project is structured around the
-          actual problem, the implementation choices, and what happened when it ran in the real world.
+          Motor control, robotics, edge AI, embedded validation, signal processing, and software. Each project is
+          structured around the actual problem, the implementation choices, the testing approach, and what happened
+          when it ran in the real world.
         </p>
       </section>
 

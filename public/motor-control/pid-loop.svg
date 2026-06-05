@@ -1,0 +1,56 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="760" rx="32" fill="#F5F8FC"/>
+  <rect x="58" y="60" width="1284" height="640" rx="28" fill="#FFFFFF" stroke="#D6DEE9" stroke-width="2"/>
+
+  <text x="96" y="124" fill="#143457" font-family="Arial, sans-serif" font-size="36" font-weight="700">
+    Closed-Loop DC Motor Control
+  </text>
+  <text x="96" y="162" fill="#5D7086" font-family="Arial, sans-serif" font-size="18">
+    Embedded C++ PID control with PWM actuation, measured speed feedback, anti-windup, and step-response tuning.
+  </text>
+
+  <rect x="98" y="284" width="176" height="88" rx="22" fill="#E9F3FF" stroke="#A9C7F3" stroke-width="2"/>
+  <text x="130" y="336" fill="#1F4D82" font-family="Arial, sans-serif" font-size="24" font-weight="700">Setpoint</text>
+
+  <rect x="340" y="250" width="214" height="156" rx="24" fill="#EEF8F0" stroke="#A7D9B0" stroke-width="2"/>
+  <text x="392" y="308" fill="#20613A" font-family="Arial, sans-serif" font-size="30" font-weight="700">PID</text>
+  <text x="372" y="344" fill="#467257" font-family="Arial, sans-serif" font-size="18">Kp · Ki · Kd tuning</text>
+  <text x="382" y="374" fill="#467257" font-family="Arial, sans-serif" font-size="18">Anti-windup clamp</text>
+
+  <rect x="622" y="284" width="210" height="88" rx="22" fill="#FFF2E7" stroke="#F0C8A0" stroke-width="2"/>
+  <text x="684" y="336" fill="#89521F" font-family="Arial, sans-serif" font-size="24" font-weight="700">PWM</text>
+
+  <rect x="900" y="250" width="208" height="156" rx="24" fill="#F5EEFF" stroke="#CCB6F3" stroke-width="2"/>
+  <text x="940" y="308" fill="#5A3793" font-family="Arial, sans-serif" font-size="30" font-weight="700">Motor</text>
+  <text x="926" y="344" fill="#6F5A9E" font-family="Arial, sans-serif" font-size="18">Speed response</text>
+  <text x="934" y="374" fill="#6F5A9E" font-family="Arial, sans-serif" font-size="18">Plant behavior</text>
+
+  <rect x="1174" y="284" width="120" height="88" rx="22" fill="#EAF3FF" stroke="#A7C8F4" stroke-width="2"/>
+  <text x="1192" y="336" fill="#27558B" font-family="Arial, sans-serif" font-size="24" font-weight="700">RPM</text>
+
+  <path d="M274 328H320" stroke="#4F87F5" stroke-width="8" stroke-linecap="round"/>
+  <path d="M554 328H602" stroke="#47A368" stroke-width="8" stroke-linecap="round"/>
+  <path d="M832 328H878" stroke="#D18833" stroke-width="8" stroke-linecap="round"/>
+  <path d="M1108 328H1152" stroke="#7E58C2" stroke-width="8" stroke-linecap="round"/>
+
+  <polygon points="320,314 350,328 320,342" fill="#4F87F5"/>
+  <polygon points="602,314 632,328 602,342" fill="#47A368"/>
+  <polygon points="878,314 908,328 878,342" fill="#D18833"/>
+  <polygon points="1152,314 1182,328 1152,342" fill="#7E58C2"/>
+
+  <path d="M1234 416C1234 530 988 606 554 606C374 606 254 562 254 500" stroke="#D45757" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="270,484 254,520 238,484" fill="#D45757"/>
+  <text x="784" y="574" fill="#B04646" font-family="Arial, sans-serif" font-size="18">Measured speed feedback</text>
+
+  <rect x="110" y="486" width="484" height="144" rx="24" fill="#182033"/>
+  <text x="144" y="536" fill="#EBF2FF" font-family="Arial, sans-serif" font-size="28" font-weight="700">Validation focus</text>
+  <text x="144" y="574" fill="#A8B7D3" font-family="Arial, sans-serif" font-size="18">
+    Step response, overshoot, settling time, steady-state error, and noisy derivative behavior.
+  </text>
+
+  <rect x="650" y="486" width="576" height="144" rx="24" fill="#FFF8E7" stroke="#EFD38F" stroke-width="2"/>
+  <text x="686" y="536" fill="#765A10" font-family="Arial, sans-serif" font-size="28" font-weight="700">What this proves</text>
+  <text x="686" y="574" fill="#8B742C" font-family="Arial, sans-serif" font-size="18">
+    Practical embedded control work: tuning, saturation handling, measured response, and hardware-aware debugging.
+  </text>
+</svg>

@@ -52,6 +52,7 @@ export type Project = {
 export const projectCategories = [
   "All",
   "Robotics & Embedded",
+  "Motor Control & Power Electronics",
   "AI & Machine Learning",
   "Signal Processing & MATLAB",
   "Software & Apps",
@@ -991,18 +992,52 @@ void loop() {
   // ── 5. DC Motor PID ───────────────────────────────────────────────
   {
     slug: "dc-motor-pid",
-    title: "DC Motor Control with PID",
-    summary: "PID controller implementation in C++ for precise DC motor speed and position control.",
-    tags: ["C++", "PID", "Motor Control", "Embedded", "Control Systems"],
-    category: "Robotics & Embedded",
+    title: "DC Motor Control with PID, PWM and Embedded C++",
+    summary:
+      "Implemented a discrete closed-loop DC motor speed controller in embedded C++ using PWM actuation, anti-windup protection, step-response testing, and tuning for low steady-state error.",
+    tags: ["Embedded C++", "PID", "PWM", "Motor Control", "Closed-Loop Control", "Validation"],
+    category: "Motor Control & Power Electronics",
     github: "https://github.com/ketul-Sanjaykumar-Patel/DC_motor_control_PID",
     bullets: [
-      "Implemented discrete PID with tunable Kp, Ki, Kd gains.",
-      "Added anti-windup for integral term to prevent saturation.",
-      "Tested step response and tuned for minimal overshoot.",
+      "Implemented a discrete PID loop with tunable Kp, Ki, and Kd gains for closed-loop DC motor speed regulation.",
+      "Drove the motor through PWM output, then clamped the integral term to reduce saturation and recovery issues.",
+      "Tested step response, tuned for low overshoot, and used measured behavior to refine control stability.",
     ],
-    results: "Stable motor speed control with fast settling time and minimal steady-state error.",
-    lessons: "Derivative term needs filtering in real hardware — raw derivative amplifies encoder noise significantly.",
+    results:
+      "Reached stable motor speed regulation with fast settling, low steady-state error, and a control loop that stayed predictable during step-response testing.",
+    lessons:
+      "Derivative action is useful, but raw derivative terms amplify measurement noise quickly on real hardware. Filtering and anti-windup matter as much as the core PID formula.",
+    story: {
+      overviewMetrics: [
+        { label: "Control loop", value: "100 Hz update rate" },
+        { label: "PWM range", value: "8-bit output 0 to 255" },
+        { label: "Settling time", value: "< 200 ms target result" },
+        { label: "Protection", value: "Integral clamp at ±100" },
+      ],
+      diagram: {
+        src: "/motor-control/pid-loop.svg",
+        caption: "Closed-loop speed-control path from setpoint through PID and PWM actuation to measured RPM feedback.",
+      },
+      tables: [
+        {
+          title: "Validation & testing",
+          columns: ["Validation step", "Details"],
+          rows: [
+            ["Test objective", "Regulate DC motor speed with low overshoot and low steady-state error."],
+            ["Test setup", "Embedded C++ loop driving PWM output while reading measured motor speed feedback."],
+            ["Tools used", "Step-response testing, gain tuning, serial observation, and response comparison after each change."],
+            ["Expected result", "Fast convergence to target speed without unstable oscillation or large saturation effects."],
+            ["Observed result", "Stable speed control with quick settling and visibly improved response after gain tuning."],
+            ["Issue found", "Derivative action amplified noisy feedback and made the loop more sensitive than expected."],
+            ["Fix or improvement", "Kept anti-windup clamping and treated derivative behavior carefully to maintain practical stability."],
+          ],
+        },
+      ],
+      outcomes: [
+        "Turned a textbook PID controller into a hardware-aware embedded control exercise with measurable behavior.",
+        "Showed control-loop thinking that is relevant to embedded validation and motor-control roles, not just robotics demos.",
+      ],
+    },
     tabs: {
       code: {
         filename: "pid_motor.cpp",
@@ -1045,12 +1080,13 @@ void loop() {
       results: {
         metrics: [
           { label: "Control loop rate", value: "100 Hz" },
-          { label: "Kp / Ki / Kd",      value: "1.2 / 0.5 / 0.05" },
-          { label: "Anti-windup",        value: "Integral clamped ±100" },
-          { label: "Settling time",      value: "< 200 ms" },
+          { label: "Kp / Ki / Kd", value: "1.2 / 0.5 / 0.05" },
+          { label: "PWM output", value: "8-bit duty command 0 to 255" },
+          { label: "Anti-windup", value: "Integral clamped ±100" },
+          { label: "Settling time", value: "< 200 ms" },
         ],
         images: [
-          // { src: "/projects/pid/step-response.png", caption: "Step response graph" },
+          { src: "/motor-control/pid-loop.svg", caption: "PID loop structure for closed-loop DC motor speed control" },
         ],
         videos: [
           // { url: "/projects/pid/demo.mp4", caption: "Motor speed control demo" },

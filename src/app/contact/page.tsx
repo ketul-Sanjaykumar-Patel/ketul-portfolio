@@ -68,7 +68,8 @@ export default function ContactPage() {
           <p className="section-kicker">Quick note</p>
           <p className="small-copy">
             If you are reaching out about a role, I would love to hear the stack, the hardware, and what the team is
-            trying to make reliable. That is usually the fastest way to know if there is a strong fit.
+            trying to make reliable. Even if my background is not a perfect one-to-one match, I learn new systems
+            quickly and care about becoming useful fast.
           </p>
         </div>
       </section>
